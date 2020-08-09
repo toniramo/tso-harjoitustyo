@@ -95,7 +95,31 @@ Myöhemmin sovellukseen tarvitaan alustavasti ainakin vielä seuraavia tauluja:
 - Answers (vastaukset)
 - Textpages (tekstisivut)
 
-ja mahdollisesti muita tauluja sovelluksen toteutuksen tarkentuessa. (Tänne lisätään tarkempi kuvaus tietokantakaaviona ja SQL-skeemana työn edetessä.)
+ja mahdollisesti muita tauluja sovelluksen toteutuksen tarkentuessa.
+
+Tietakannan SQL-skeema on tällä hetkellä seuraava:
+
+```
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE,
+    password TEXT,
+    first_name TEXT,
+    last_name TEXT
+);
+
+CREATE TABLE courses (
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE,
+    description TEXT,
+    teacher_id INTEGER REFERENCES users (id)
+);
+
+CREATE TABLE participants (
+    course_id INTEGER REFERENCES courses (id),
+    user_id INTEGER REFERENCES users (id)
+);
+```
 
 ## <a name="toteutus"></a>Toteutus tällä hetkellä
 
