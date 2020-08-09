@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="/courses/search/result" method="GET">
+    <p>
+        Hakusana <small>(etsitään kurssinimestä ja kuvauksesta)</small>:  <br>
+        <input type="text" name="search_string">
+    </p>
+    <p>
+        Kurssin opettaja: <br>
+        <input type="text" name="teacher">
+    </p>
+    <p>
+        <input type="checkbox" name="include_enrolled" value="True" Checked> Sisällytä kurssit, joihin olet jo ilmottautunut.
+    </p>
+    <p>
+        <input type="submit" value="Etsi kursseja">
+    </p>
+</form>
+
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
+    Mikäli haluat listata kaikki kurssit, jätä tekstikentät tyhjäksi.
+</p>
+{% endblock %}

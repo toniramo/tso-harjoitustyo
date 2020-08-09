@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block content %}
+Haun tulokset:
+<ul>
+{% for course in searched_courses %}
+    <li style="margin-bottom: 10px;">
+        <a href="/courses/course{{ course[3] }}">{{ course[0] }}</a> {{ course[2] }}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

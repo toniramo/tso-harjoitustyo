@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="/courses/new" method="POST">
+    Kurssin nimi: <input type="text" name="name"> <br>
+    Kurssin kuvaus: <textarea name="description" rows="4" cols="50"></textarea> <br>
+    <input type="submit" value="Luo kurssi">
+</form>
+
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi huomio:</small> <br>
+    Kurssin vastuuopettajaksi merkitään automaattisesti kurssin luonut henkilö. 
+    Tätä ei ole tällä hetkellä mahdollista muokata.
+</p>
+{% endblock %}
+

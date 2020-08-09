@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Kurssit{% endblock %}
+{% block content %}
+Olet ilmoittautunut seuraaville kursseille:
+<ul>
+{% for course in courses_of_user %}
+    <li style="margin-bottom: 10px;">
+        <a href="/courses/course{{ course[3] }}">{{ course[0] }}</a>, {{ course[2] }}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

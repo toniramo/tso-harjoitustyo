@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block content %}
+{% set enrolled = {'flag': False} %}
+<h1>{{ course[0] }}</h1>
+Opettaja: {{ course[2] }}
+<p>{{ course[1] }}</p>
+<p>
+    Osallistujat:
+    <ul>
+        {% for participant in participants %}
+        <li>
+            {{ participant[0] }}
+            {% if participant[0] == course[2] %} 
+            <small>(kurssin opettaja)</small> 
+            {% endif %}
+            {% if session["user_id"]|int() == participant[1]|int() %} 
+                {% if enrolled.update({'flag':True}) %}
+                {% endif %}
+            <small>(sinä)</small> 
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</p>
+<form action="/courses/enroll/course{{ course[3] }}" method="POST">
+    <input type="submit" {% if enrolled.flag %}value="Olet jo liittynyt kurssille" disabled="disabled"{% else %} value="Liity kurssille"{% endif %}>
+</form>
+
+{% endblock %}
