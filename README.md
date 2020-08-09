@@ -1,12 +1,24 @@
 # Opetussovellus
+<a name="ylos"></a>
 
 Opetussovelluksen tarkoituksena on tarjota selainpohjainen alusta opetuksen tueksi sekä opettajille että oppilaille. Sovelluksen avulla opettajat voivat luoda oppilaille suoritettavaksi erilaisia kurssikohtaisia tehtäviä ja seurata näiden suorittamisen edistymistä. Lisäksi sovellukseen voi lisätä tehtävien lisäksi myös tekstipohjaista sisältöä. Sovellus tarjoaa yksilöllisen näkymän kullekin käyttäjälle ja omat käyttäjäroolit opettajille ja oppilaille. Käyttäjä tunnistetaan henkilökohtaisen käyttäjätunnuksen avulla. Näitä ylläpidetään ylläpitoroolin avulla.
 
-Sovellus toteutetaan Helsingin yliopiston tietojenkäsittelytieteen aineopintojen tietokantasovellus-harjoitustyönä (tunnetaan myös _tsoha_). Lisätietoja löytyy kurssin [omilta sivulta](https://hy-tsoha.github.io).
+Sovellus toteutetaan Helsingin yliopiston tietojenkäsittelytieteen aineopintojen tietokantasovellus-harjoitustyönä (tunnetaan myös _tsoha_). Lisätietoja löytyy kurssin [omilta sivulta](https://hy-tsoha.github.io/materiaali/index).
 
 Sovelluksen aiheen pohjana toimii kurssimateriaalin ehdotus opetussovelluksen [sisällöstä](https://hy-tsoha.github.io/materiaali/pages/aiheen_valinta.html)
 
-## Vaatimukset
+## Sisältö
+
+- [Vaatimukset](#vaatimukset)
+
+   - [Käyttöliittymä](#ui)
+   - [Yhteenveto](#yhteenveto)
+- [Arkkitehtuuri](#arkkitehtuuri)
+- [Toteutus tällä hetkellä](#toteutus)
+- [Kirjautuminen Herokuun](#kirjautuminen)
+
+
+## <a name="vaatimukset"></a>Vaatimukset
 
 Sovelluksessa on tuki kolmelle käyttäjäroolille:
 
@@ -22,11 +34,11 @@ Sovellukseen voi luoda kursseja, joilla on yksilöllinen tunnus, kurssin nimi ja
 
 Opettajat ja ylläpitäjät voivat luoda ja tarkastella kursseja. Kurssien poistaminen tapahtuu joko kurssin luoneen opettajan tai kenen tahansa ylläpitäjän toimesta. Opettajat voivat tuottaa ja muokata kurssien sisältöä.
 
-Opiskelijat voivat liittyä itse haluamilleen kursseille. Opettajat ja ylläpitäjät voivat nähdä ketä kursseille on liittynyt.
+Opiskelijat voivat liittyä itse haluamilleen kursseille. Opettajat ja ylläpitäjät voivat nähdä, ketä kursseille on liittynyt.
 
 Ilmoittauduttuaan kurssille opiskelijat voivat nähdä valitun kurssin sisällön ja suorittaa tämän alle luotuja tehtäviä. Opettajat voivat nähdä tehtävien suorituksiin liittyviä tietoja. Opiskelijat näkevät vain omat tietonsa.
 
-### Käyttöliittymä
+### <a name="ui"></a>Käyttöliittymä
 
 Sovelluksen käyttöliittymä on selainpohjainen ja sen tulee toimia yleisimmillä selaimilla (Chrome ja Firefox) sekä tekstipohjaisella selaimella.
 
@@ -34,7 +46,7 @@ Alla käyttöliittymäluonnos opiskelijakäyttäjän näkökulmasta.
 
 ![ui-luonnos](./dokumentaatio/opetussovellus_ui_opiskelija.png)
 
-### Yhteenveto
+###  <a name="yhteenveto"></a>Yhteenveto
 
 Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 
@@ -53,7 +65,7 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 | Oman kurssin sisällön muokkaaminen		| 		| X		| X		|
 | Toisen kurssin sisällön muokkaaminen		| 		| X<sup>[1](#a1)</sup>	| X		|
 | Kurssien kuvauksen tarkasteleminen		| X		| X		| X		|
-| Kursseille ilmoittautuminen			| X		| 		| X		|
+| Kursseille ilmoittautuminen			| X		| 	X	| X		|
 | Kurssien materiaalien tarkastelminen / suorittaminen	| X <sup>[2](#a2)</sup> | X	| X		|
 | Kurssien materiaalien muokkaaminen 		| 		| X		| X 		|
 | Omien suoritusten tarkasteleminen 		| X		| X		| X		|
@@ -64,22 +76,51 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 <a name="a2">2</a>: Opiskelijan ilmoittauduttua kurssille.
 
 
-## Arkkitehtuuri
+## <a name="arkkitehtuuri"></a>Arkkitehtuuri
 
 Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjkäyttökokemusta parantavien toimintojen toteuttamiseksi.
 
 Sovelluksessa käytettävien tietojen pysyväistallennuseen käytetään PostgreSQL-tietokantaa.
 
-### Tietokannan rakenne
+### <a name="dbrakenne"></a>Tietokannan rakenne
 
-Tietokannassa on alustavasti seuraavat taulut:
+Tietokannassa on käytössä seuraavat taulut:
+- Users (käyttäjät)
+- Courses (kurssit)
+- Participants (osallistujat)
 
-- Käyttäjät (Users)
-- Käyttäjäroolit (Roles)
-- Kurssit (Courses)
-- Tehtävät (Excersices)
-- Vastausvaihtoehdot (Choises)
-- Vastaukset (Answers)
-- Tekstisivut (Textpages)
+Myöhemmin sovellukseen tarvitaan alustavasti ainakin vielä seuraavia tauluja:
+- Exercises (tehtävät)
+- Choises (vastausvaihtoehdot)
+- Answers (vastaukset)
+- Textpages (tekstisivut)
 
 ja mahdollisesti muita tauluja sovelluksen toteutuksen tarkentuessa. (Tänne lisätään tarkempi kuvaus tietokantakaaviona ja SQL-skeemana työn edetessä.)
+
+## <a name="toteutus"></a>Toteutus tällä hetkellä
+
+Tällä hetkellä tietokannan toiminnallisuuksista on toteutettu seuraavaa:
+
+Ennen kirjautumista käyttäjäjä voi:
+- Tarkastella etusivua
+- Kirjautua sisään tunnuksella ja salasanalla
+- Luoda uuden tunnuksen
+
+Kirjauduttuaan käyttäjä voi:
+- Tarkastella etusivua
+- Hakea kursseja
+- Tarkastella kurssien sivuja
+- Ilmoittautua kursseille
+- Ludoa uuden kurssin
+
+Huomaa, että toistaiseksi sovelluksessa ei ole tukea eri käyttäjärooleille ja käyttöoikeuksien hallinnalle. Sen sijaan jokainen käyttäjä on samanarvoinen ja voi täten luoda uuden kurssin. Myöhemmin tämän on tarkoitus olla vain opettajiksi tai ylläpitäjiksi luokiteltujen käyttäjien ominaisuus.
+
+Toistaiseksi ohjelman keskeisistä toiminnoista puuttuu myös tuki kurssikohtaisten tehtävien ja tekstisivujen luomista ja lukemista/suorittamista ja näihin liittyvien tilastojen tarkastelua varten.
+
+## <a name="kirjautuminen"></a>Kirjautuminen Herokuun
+
+Sovellukseen pääsee Herokussa osoitteessa: https://tso-harjoitustyo.herokuapp.com/ .
+
+Voit luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
+
+[Palaa ylos](#ylos)
