@@ -111,7 +111,7 @@ Kirjauduttuaan käyttäjä voi:
 - Hakea kursseja
 - Tarkastella kurssien sivuja
 - Ilmoittautua kursseille
-- Ludoa uuden kurssin
+- Luoda uuden kurssin
 
 Huomaa, että toistaiseksi sovelluksessa ei ole tukea eri käyttäjärooleille ja käyttöoikeuksien hallinnalle. Sen sijaan jokainen käyttäjä on samanarvoinen ja voi täten luoda uuden kurssin. Myöhemmin tämän on tarkoitus olla vain opettajiksi tai ylläpitäjiksi luokiteltujen käyttäjien ominaisuus.
 
@@ -123,4 +123,4 @@ Sovellukseen pääsee Herokussa osoitteessa: https://tso-harjoitustyo.herokuapp.
 
 Voit luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
 
-[Palaa ylos](#ylos)
+[Palaa ylös](#ylos)
