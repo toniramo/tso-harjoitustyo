@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="fi">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="static/styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Opetussovellus Huhuu. {% block title %}{% endblock %}</title>
+    </head>
+    <div class="header">
+        <img src="/static/logo.svg" alt="logo" height="50"><br>
+        Opetussovellus <b>Huhuu.</b>
+    </div>
+    <nav class="panel">
+        {% if session["user_id"] %}
+        <ul>
+            <li><a href="/">Etusivu</a></li>
+            <li><a href="/courses">Kurssit</a></li>
+            <li><a href="/logout">Kirjaudu ulos</a></li>
+        </ul>
+            {% if "courses" in request.path %}
+            <ul>
+                <li><a href="/courses">Ilmoittautumiset</a></li>
+                <li><a href="/courses/search">Kurssihaku</a></li>
+                <li><a href="/courses/new">Luo uusi kurssi</a></li>
+            </ul>
+            {% endif %}
+        {% else %}
+        <ul>
+            <li><a href="/">Etusivu</a></li>
+            <li><a href="/login">Kirjautuminen</a></li>
+            <li><a href="/register">Luo käyttäjätunnus</a></li>
+        </ul>
+        {% endif %}
+    </nav>
+    <div class="content">
+    {% block content %}{% endblock %}
+    </div>
+    <div class="header rotate">
+        <br>
+        <img src="/static/logo.svg" alt="logo" height="50">
+    </div>
+</html>

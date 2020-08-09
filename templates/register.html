@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="/register" method="POST">
+    <p>
+        Käyttäjänimi: <br>
+        <input type="text" name="username"> <br>
+        Salasana: <br>
+        <input type="password" name="password">
+    </p>
+    <p>
+        Etunimi: <br>
+        <input type="text" name="first_name"> <br>
+        Sukunimi: <br>
+        <input type="text" name="last_name">
+    </p>
+    <input type="submit" value="Kirjaudu sisään">
+</form>
+{% endblock %}
