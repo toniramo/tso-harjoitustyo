@@ -63,7 +63,7 @@ def course_search_result():
 
 @app.route("/courses/enroll/course<int:id>", methods=["POST"])
 def enroll_course(id):
-    if (courses.enroll_course(id)):
+    if courses.enroll_course(id):
         return redirect("/courses/course"+str(id))
     else:
         return render_template("error.html",message="Virhe liityttäessä kurssille. Oletko jo kurssilla?")
