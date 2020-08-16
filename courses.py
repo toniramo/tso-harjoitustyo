@@ -30,7 +30,7 @@ def get_searched_courses(search_string,teacher,include_enrolled):
             WHERE (courses.name ILIKE :search_string \
                    OR courses.description ILIKE :search_string) \
             AND users.username ILIKE :teacher" 
-    if include_enrolled != 'True':
+    if include_enrolled != True:
         sql += " AND courses.id NOT IN (SELECT participants.course_id FROM participants WHERE user_id=:user_id)"
         result = db.session.execute(sql, {"search_string":"%"+search_string+"%","teacher":"%"+teacher+"%", "user_id":str(session["user_id"])})
     else:    

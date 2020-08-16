@@ -57,7 +57,7 @@ def course_search():
 def course_search_result():
     search_string = request.args["search_string"]
     teacher = request.args["teacher"]
-    include_enrolled = request.args.get("include_enrolled")
+    include_enrolled = bool(request.args.get("include_enrolled"))
     searched_courses = courses.get_searched_courses(search_string,teacher,include_enrolled)
     return render_template("/courses/result.html", searched_courses=searched_courses)
 
