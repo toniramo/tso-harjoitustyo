@@ -10,7 +10,8 @@ CREATE TABLE courses (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
     description TEXT,
-    teacher_id INTEGER REFERENCES users (id)
+    teacher_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
 );
 
 CREATE TABLE participants (

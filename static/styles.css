@@ -3,6 +3,7 @@
     align-content: center;
     text-align: center;
     margin-bottom: 1em;
+    padding-top: 2em;
     color:darkslateblue;
 }
 
@@ -21,13 +22,13 @@ h1, h2, h3 {
 
 body {
     margin: 0 auto;
-    max-width: 30em;
+    max-width: 90%;
     color: #555;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     line-height: 1.5;
-    padding: 4em 1em;
+    padding: 0em 1em;
     background-color: lavender;
-    overflow: hidden;
+    /*overflow: hidden;*/
 
 }
 
@@ -38,7 +39,7 @@ body {
     background-color: rgba(255, 255, 255, 0.7);
     border-radius: 0px 0px 5px 5px;
     overflow-y:auto;
-    max-height: 50vh;
+    /*max-height: 60vh;*/
 }
 
 ::-webkit-scrollbar {

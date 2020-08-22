@@ -32,6 +32,7 @@ def register():
         password = request.form["password"]
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
+        #TODO check that fields are not empty
         if users.register(username, password, first_name, last_name):
             return redirect("/")
         else:
@@ -47,19 +48,34 @@ def courses_index():
 def course(id):
     course = courses.get_course(id)
     participants = courses.get_participants_of_course(id)
-    return render_template("courses/course.html", course=course, participants=participants)
+    return render_template("courses/course.html", 
+        course=course, 
+        participants=participants)
 
 @app.route("/courses/search")
 def course_search():
-    return render_template("courses/search.html")
+    return render_template("courses/search.html", 
+    include_enrolled=True, 
+    order_by="name")
 
 @app.route("/courses/search/result", methods=["GET"])
 def course_search_result():
     search_string = request.args["search_string"]
     teacher = request.args["teacher"]
     include_enrolled = bool(request.args.get("include_enrolled"))
-    searched_courses = courses.get_searched_courses(search_string,teacher,include_enrolled)
-    return render_template("/courses/result.html", searched_courses=searched_courses)
+    order_by = request.args.get("order_by")
+    if order_by == "":
+        order_by = "name"
+    searched_courses = courses.get_searched_courses(
+        search_string,
+        teacher,
+        include_enrolled,order_by)
+    return render_template("/courses/result.html", 
+        searched_courses=searched_courses, 
+        search_string=search_string, 
+        teacher=teacher, 
+        include_enrolled=include_enrolled,
+        order_by=order_by)
 
 @app.route("/courses/enroll/course<int:id>", methods=["POST"])
 def enroll_course(id):
@@ -75,6 +91,7 @@ def new_course():
     if request.method == "POST":
         name = request.form["name"]
         description = request.form["description"]
+        #TODO check fields are not empty
         id = courses.new_course(name,description)
         if id != None:
             return redirect("/courses/course"+str(id))
