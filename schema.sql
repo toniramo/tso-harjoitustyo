@@ -1,8 +1,8 @@
 CREATE TABLE users
 (
     id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE,
-    password TEXT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
     first_name TEXT,
     last_name TEXT
 );
@@ -10,7 +10,7 @@ CREATE TABLE users
 CREATE TABLE courses
 (
     id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE,
+    name TEXT UNIQUE NOT NULL,
     description TEXT,
     teacher_id INTEGER REFERENCES users (id),
     created_at TIMESTAMP
@@ -26,7 +26,7 @@ CREATE TABLE chapters
 (
     id SERIAL PRIMARY KEY,
     ordinal INTEGER,
-    name TEXT,
+    name TEXT NOT NULL,
     content TEXT,
     course_id INTEGER REFERENCES courses (id),
     creator_id INTEGER REFERENCES users (id),
@@ -37,7 +37,7 @@ CREATE TABLE exercises
 (
     id SERIAL PRIMARY KEY,
     ordinal INTEGER,
-    name TEXT,
+    name TEXT NOT NULL,
     question TEXT,
     course_id INTEGER REFERENCES courses (id),
     chapter_id INTEGER REFERENCES chapters (id),
@@ -49,7 +49,7 @@ CREATE TABLE choices
 (
     id SERIAL PRIMARY KEY,
     correct BOOLEAN,
-    description TEXT,
+    description TEXT NOT NULL,
     exercise_id INTEGER REFERENCES exercises (id),
     created_at TIMESTAMP
 );

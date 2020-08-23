@@ -2,7 +2,7 @@
 
 {% block content %}
 <form action="/courses/new" method="POST">
-    Kurssin nimi: <input type="text" name="name"> <br>
+    Kurssin nimi: <input type="text" name="name" required="required"> <br>
     Kurssin kuvaus: <textarea name="description" rows="4" cols="50"></textarea> <br>
     <input type="submit" value="Luo kurssi">
 </form>
