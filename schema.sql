@@ -1,4 +1,5 @@
-CREATE TABLE users (
+CREATE TABLE users
+(
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
     password TEXT,
@@ -6,7 +7,8 @@ CREATE TABLE users (
     last_name TEXT
 );
 
-CREATE TABLE courses (
+CREATE TABLE courses
+(
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
     description TEXT,
@@ -14,7 +16,19 @@ CREATE TABLE courses (
     created_at TIMESTAMP
 );
 
-CREATE TABLE participants (
+CREATE TABLE participants
+(
     course_id INTEGER REFERENCES courses (id),
     user_id INTEGER REFERENCES users (id)
+);
+
+CREATE TABLE chapters
+(
+    id SERIAL PRIMARY KEY,
+    ordinal INTEGER,
+    name TEXT,
+    content TEXT,
+    course_id INTEGER REFERENCES courses (id),
+    creator_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
 );

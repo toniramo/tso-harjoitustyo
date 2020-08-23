@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Luku {{ chapter[0] }} - {{ chapter[1] }}</h1>
+{% for line in chapter[2].rsplit('\n') %}
+<p>{{ line }}</p>
+{% endfor %}
+<a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/modify">Muokkaa lukua</a> | 
+<a href="/courses/course{{ course_id }}">Takaisin kurssisivulle</a>
+{% endblock %}

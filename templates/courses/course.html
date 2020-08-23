@@ -3,10 +3,28 @@
 {% block content %}
 {% set enrolled = {'flag': False} %}
 <h1>{{ course[0] }}</h1>
-Opettaja: {{ course[2] }}
-<p>{{ course[1] }}</p>
+
+<ul>
+    <li>
+        Opettaja: {{ course[2] }}
+    </li>
+    <li>
+        {{ course[1] }}
+    </li>
+</ul>
+
+<h2>Luvut</h2>
+<ul>
+{% for chapter in chapters %}
+    <li>
+        {{ chapter[1] }}) <a href="/courses/course{{ course[3] }}/chapters/chapter{{ chapter[0] }}">{{ chapter[2] }}</a>
+    </li>
+{% endfor %}
+</ul>
+<a href="/courses/course{{ course[3] }}/chapters/new">Luo uusi luku</a>
+
 <p>
-    Osallistujat:
+    <h2>Osallistujat</h2>
     <ul>
         {% for participant in participants %}
         <li>
@@ -23,6 +41,7 @@ Opettaja: {{ course[2] }}
         {% endfor %}
     </ul>
 </p>
+
 <form action="/courses/enroll/course{{ course[3] }}" method="POST">
     <input type="submit" {% if enrolled.flag %}value="Olet liittynyt kurssille" disabled="disabled"{% else %} value="Liity kurssille"{% endif %}>
 </form>
