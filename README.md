@@ -78,73 +78,130 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 
 ## <a name="arkkitehtuuri"></a>Arkkitehtuuri
 
-Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjkäyttökokemusta parantavien toimintojen toteuttamiseksi.
+Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjkäyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
 
 Sovelluksessa käytettävien tietojen pysyväistallennuseen käytetään PostgreSQL-tietokantaa.
 
 ### <a name="dbrakenne"></a>Tietokannan rakenne
 
 Tietokannassa on käytössä seuraavat taulut:
-- Users (käyttäjät)
+- Users (sovelluksen käyttäjätiedot)
 - Courses (kurssit)
-- Participants (osallistujat)
-
-Myöhemmin sovellukseen tarvitaan alustavasti ainakin vielä seuraavia tauluja:
-- Exercises (tehtävät)
-- Choises (vastausvaihtoehdot)
-- Answers (vastaukset)
-- Textpages (tekstisivut)
-
-ja mahdollisesti muita tauluja sovelluksen toteutuksen tarkentuessa.
+- Participants (kurssien osallistujat)
+- Chapters (kurssien luvut)
+- Exercises (lukujen tehtävät)
+- Choises (tehtävien vastausvaihtoehdot)
+- Answers (käyttäjien vastaukset)
 
 Tietakannan SQL-skeema on tällä hetkellä seuraava:
 
 ```
-CREATE TABLE users (
+CREATE TABLE users
+(
     id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE,
-    password TEXT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
     first_name TEXT,
     last_name TEXT
 );
 
-CREATE TABLE courses (
+CREATE TABLE courses
+(
     id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE,
+    name TEXT UNIQUE NOT NULL,
     description TEXT,
-    teacher_id INTEGER REFERENCES users (id)
+    teacher_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
 );
 
-CREATE TABLE participants (
+CREATE TABLE participants
+(
     course_id INTEGER REFERENCES courses (id),
     user_id INTEGER REFERENCES users (id)
 );
+
+CREATE TABLE chapters
+(
+    id SERIAL PRIMARY KEY,
+    ordinal INTEGER,
+    name TEXT NOT NULL,
+    content TEXT,
+    course_id INTEGER REFERENCES courses (id),
+    creator_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE exercises
+(
+    id SERIAL PRIMARY KEY,
+    ordinal INTEGER,
+    name TEXT NOT NULL,
+    question TEXT,
+    course_id INTEGER REFERENCES courses (id),
+    chapter_id INTEGER REFERENCES chapters (id),
+    creator_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE choices
+(
+    id SERIAL PRIMARY KEY,
+    correct BOOLEAN,
+    description TEXT NOT NULL,
+    exercise_id INTEGER REFERENCES exercises (id),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE answers
+(
+    exercise_id INTEGER REFERENCES exercises (id),
+    choice_id INTEGER REFERENCES choices (id),
+    user_id INTEGER REFERENCES users (id),
+    answered_at TIMESTAMP
+);
 ```
 
-## <a name="toteutus"></a>Toteutus tällä hetkellä
+## <a name="toteutus"></a>Toteutus tällä hetkellä (Välipalautus 3)
 
-Tällä hetkellä tietokannan toiminnallisuuksista on toteutettu seuraavaa:
+Tällä hetkellä sovelluksen toiminnallisuuksista on toteutettu seuraavaa:
 
 Ennen kirjautumista käyttäjäjä voi:
+
 - Tarkastella etusivua
 - Kirjautua sisään tunnuksella ja salasanalla
 - Luoda uuden tunnuksen
 
 Kirjauduttuaan käyttäjä voi:
+
 - Tarkastella etusivua
-- Hakea kursseja
-- Tarkastella kurssien sivuja
-- Ilmoittautua kursseille
-- Luoda uuden kurssin
+- Hallita kursseja:
+  - Hakea kursseja
+  - Tarkastella kurssien sivuja
+  - Ilmoittautua kursseille
+  - Luoda uuden kurssin
+- Hallita, tarkastella ja käyttää kurssien sisältöä:
+  - Luoda kursseille uusia lukuja, jotka sisältävät luvun järjestysluvun, nimen ja tekstiä
+  - Muokata jo luotuja lukuja
+  - Luoda lukujen alle tehtäviä sisältäen tehtävän järjestysluvun, nimen, kysymyksen ja käyttäjän määrittelemän määrän vastausvaihtoehtoja (vaihtoehtoja on vähintään yksi, useampi voi olla oikein)
+  - Vastata lukujen tehtäviin (vain kerran)
+  - Nähdä oliko oma vastaus oikein vai väärin ja mikä/mitkä olisivat olleet oikeita vastauksia
+  - Nähdä kurssin tehtävien yhteenvedon (kpl vastauksista oikein, väärin ja vastauksia yhteensä)
 
-Huomaa, että toistaiseksi sovelluksessa ei ole tukea eri käyttäjärooleille ja käyttöoikeuksien hallinnalle. Sen sijaan jokainen käyttäjä on samanarvoinen ja voi täten luoda uuden kurssin. Myöhemmin tämän on tarkoitus olla vain opettajiksi tai ylläpitäjiksi luokiteltujen käyttäjien ominaisuus.
+Huomaa, että alkuperäiseen suunnitelmaan nähden, sovelluksesta puuttuu vielä seuraavia olennaisia toimintoja:
 
-Toistaiseksi ohjelman keskeisistä toiminnoista puuttuu myös tuki kurssikohtaisten tehtävien ja tekstisivujen luomista ja lukemista/suorittamista ja näihin liittyvien tilastojen tarkastelua varten.
+- Käyttäjäroolien ja sisällön hallinta:
+  - Eri käyttäjäroolit ja toimintojen rajaus roolin perusteella (esim. kurssisisältöjen hallinta
+  - Kurssisisältöjen näkyvyys sen perusteella onko käyttäjä ilmoittautunut vai ei (nyt ilmoittautumisella ei ole väliä)
+  - Käyttäjän henkilökohtainen yhteenveto
+
+Toisin sanoen, kaikki käyttäjät ovat samanarvoisia ja voivat sekä nähdä että muokata sisältöä riippumatta siitä, onko käyttäjä oikeasti opettaja vai oppilas tai ilmottautunut kurssille vai ei.
 
 ## <a name="kirjautuminen"></a>Kirjautuminen Herokuun
 
 Sovellukseen pääsee Herokussa osoitteessa: https://tso-harjoitustyo.herokuapp.com/ .
 
 Voit luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
+
+On suositeltavaa luoda erilaisia kursseja, kurssien alle lukuja ja lukujen alle tehtäviä. Koita myös ratkaista tekemiäsi tehtäviä. Kokeile rohkeasti löydätkö ohjelmasta virheitä syötteillä, joihin ei olla toistaiseksi kehitysvaiheessa varauduttu.
 
 [Palaa ylös](#ylos)
