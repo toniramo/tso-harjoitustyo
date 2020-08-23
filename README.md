@@ -189,10 +189,12 @@ Kirjauduttuaan käyttäjä voi:
 
 Huomaa, että alkuperäiseen suunnitelmaan nähden, sovelluksesta puuttuu vielä seuraavia olennaisia toimintoja:
 
-- Käyttäjäroolien ja sisällön hallinta:
-  - Eri käyttäjäroolit ja toimintojen rajaus roolin perusteella (esim. kurssisisältöjen hallinta
+- Käyttäjäroolien hallinta:
+  - Eri käyttäjäroolit ja toimintojen rajaus roolin perusteella (esim. kurssisisältöjen hallinta)
+  - Käyttäjätietojen muokkausmahdollisuus
+- Sisällön hallinta:
+  - Käyttäjän luoman sisällön poistamismahdollisuus
   - Kurssisisältöjen näkyvyys sen perusteella onko käyttäjä ilmoittautunut vai ei (nyt ilmoittautumisella ei ole väliä)
-  - Käyttäjän henkilökohtainen yhteenveto
 
 Toisin sanoen, kaikki käyttäjät ovat samanarvoisia ja voivat sekä nähdä että muokata sisältöä riippumatta siitä, onko käyttäjä oikeasti opettaja vai oppilas tai ilmottautunut kurssille vai ei.
 
@@ -202,6 +204,6 @@ Sovellukseen pääsee Herokussa osoitteessa: https://tso-harjoitustyo.herokuapp.
 
 Voit luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
 
-On suositeltavaa luoda erilaisia kursseja, kurssien alle lukuja ja lukujen alle tehtäviä. Koita myös ratkaista tekemiäsi tehtäviä. Kokeile rohkeasti löydätkö ohjelmasta virheitä syötteillä, joihin ei olla toistaiseksi kehitysvaiheessa varauduttu.
+On suositeltavaa luoda muutama käyttäjä, erilaisia kursseja, kurssien alle lukuja ja lukujen alle tehtäviä. Koita myös ratkaista tekemiäsi tehtäviä. Kokeile rohkeasti löydätkö ohjelmasta virheitä tai epäjohdonmukaisuuksia syötteillä, joihin ei olla toistaiseksi kehitysvaiheessa huomattu varautua.
 
 [Palaa ylös](#ylos)
