@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% set course_path = "/courses/course"+course_id|string %}
+{% set chapter_path = "/chapters/chapter"+chapter_id|string %}
+{% set correct_choice = [] %}
+
+{% block content %}
+Luku {{ chapter[0] }} - {{ chapter[1] }}
+<h1>Tehtävä {{ exercise[0] }} - {{ exercise[1] }}</h1>
+{% for line in exercise[2].rsplit('\n') %}
+<p>{{ line }}</p>
+{% endfor %}
+
+<form action="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}" method="POST">
+    <table>
+        {% for choice in choices %}
+        <tr>
+            <td>
+                <input type="radio" name="choice" value="{{ choice[0] }}" {% if answer != None %} disabled {% endif %} {% if answer == choice[0] %} checked {% endif %}>
+            </td>
+            <td>
+                <label>{{ choice[1] }}</label>
+            </td>
+            {% if answer != None %}
+            <td>
+                {% if choice[2] %}
+                {% if correct_choice.append(choice[0]) %}{% endif %}
+                ✔ <small>Oikea vastaus</small>
+                {% else %}
+                ✖ <small>Väärä vastaus</small>
+                {% endif %}
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    <input type="submit" {% if answer != None %} value="Vastaus lukittu" disabled {% else %} value="Lukitse vastaus" {% endif %}>
+</form>
+
+<p>
+    {% if answer != None %}
+        {% if answer == correct_choice[0] %}
+        <img src="/static/logo.svg" alt="logo" height="40px"> Vastauksesi on OIKEIN, hienoa!
+        {% else %}
+        Vastauksesi on valitettavasti väärin. <large>:(</large>
+        {% endif %}
+    {% else %}
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi huomio:</small> <br>
+    Toistaiseksi voit vastata tehtävään vain kerran. Olethan tarkkana!
+    {% endif %}
+</p>
+
+<a href="{{ course_path }}{{ chapter_path }}">Palaa takaisin lukuun</a>
+
+{% endblock %}

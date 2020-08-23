@@ -46,4 +46,27 @@
     <input type="submit" {% if enrolled.flag %}value="Olet liittynyt kurssille" disabled="disabled"{% else %} value="Liity kurssille"{% endif %}>
 </form>
 
+{% if enrolled.flag %}
+    <h2>Tuloksien yhteenveto</h2>
+    <table>
+        <tr>
+            <th>Luku</th>
+            <th>Tehtävä</th>
+            <th>Oikeita vastauksia</th>
+            <th>Vääriä vastauksia</th>
+            <th>Vastauksia yhteensä</th>
+        </tr>
+        {% for result in exercise_results %}
+        <tr>
+            <td>{{ result[0] }}</td>
+            <td>{{ result[1] }}</td>
+            <td>{{ result[2] }}</td>
+            <td>{{ result[3] }}</td>
+            <td>{{ result[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+{% endif %}
+
 {% endblock %}

@@ -124,6 +124,12 @@ input[type=submit] {
     box-shadow: 0 4px 6px -4px darkslateblue;
 }
 
+#secondary_button {
+    background-color: #dfcce4;
+    color:rgb(20, 19, 19);
+    padding: 8px 15px;
+}
+
 input[disabled] {
     background-color: rgb(193, 184, 202);
     color:white;

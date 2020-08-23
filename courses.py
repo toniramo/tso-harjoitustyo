@@ -18,7 +18,6 @@ def get_course(course_id):
     result = db.session.execute(sql, {"course_id": course_id})
     return result.fetchone()
 
-
 def get_participants_of_course(course_id):
     sql = "SELECT users.username, users.id FROM users \
             JOIN participants ON users.id = participants.user_id \

@@ -56,11 +56,12 @@ def course(id):
     course = courses.get_course(id)
     participants = courses.get_participants_of_course(id)
     chapters = course_contents.get_course_chapters(id)
+    exercise_results = course_contents.get_course_result_summary(id)
     return render_template("courses/course.html",
                            course=course,
                            participants=participants,
-                           chapters=chapters)
-
+                           chapters=chapters,
+                           exercise_results=exercise_results)
 
 @app.route("/courses/search")
 def course_search():
@@ -133,7 +134,8 @@ def new_chapter(id):
 def chapter(course_id, chapter_id):
     chapter = course_contents.get_chapter(chapter_id)
     # TODO check if user has enrolled
-    return render_template("/courses/chapters/chapter.html", chapter=chapter, chapter_id=chapter_id, course_id=course_id)
+    exercises = course_contents.get_chapter_exercises(chapter_id)
+    return render_template("/courses/chapters/chapter.html", chapter=chapter, chapter_id=chapter_id, course_id=course_id, exercises=exercises)
 
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/modify", methods=["GET", "POST"])
@@ -142,8 +144,40 @@ def modify_chapter(course_id, chapter_id):
         chapter = course_contents.get_chapter(chapter_id)
         return render_template("/courses/chapters/modify.html", course_id=course_id, chapter_id=chapter_id, chapter=chapter)
     if request.method == "POST":
-        parameters = request.form
-        if course_contents.update_chapter(parameters):
+        if course_contents.update_chapter(request.form):
             return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id))
         else:
             return render_template("error.html", message="Jokin meni pieleen muokatessa lukua. :(")
+
+
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/new", methods=["GET", "POST"])
+def new_exercise(course_id, chapter_id):
+    exercise_count = len(course_contents.get_chapter_exercises(chapter_id))
+    if request.method == "GET":
+        return render_template("/courses/exercises/new_initial.html", course_id=course_id, chapter_id=chapter_id, choices=4, exercise_count=exercise_count)
+    if request.method == "POST":
+        if request.form["button"] == "Päivitä vaihtoehtojen määrä":
+            choices = int(request.form["choices"])
+            print(request.form)
+            return render_template("/courses/exercises/new_updated.html", course_id=course_id, chapter_id=chapter_id, choices=choices, exercise_count=exercise_count, form=request.form)
+        if request.form["button"] == "Luo tehtävä":
+            exercise_id = course_contents.add_exercise(request.form)
+            if exercise_id != None:
+                return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
+            else:
+                return render_template("error.html", message="Jokin meni pieleen luodessa tehtävää. :(")
+
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/exercise<int:exercise_id>", methods=["GET","POST"])
+def exercise(course_id, chapter_id, exercise_id):
+    chapter = course_contents.get_chapter(chapter_id)
+    exercise = course_contents.get_exercise(exercise_id)
+    choices = course_contents.get_exercise_choises(exercise_id)
+    answer = course_contents.get_answer_of_current_user(exercise_id)
+    if request.method == "GET":
+        return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer)
+    if request.method == "POST":
+        choice_id = request.form["choice"]
+        if course_contents.add_answer(exercise_id, choice_id):
+            return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
+        else:
+            return render_template("error.html", message="Jokin meni pieleen vastatessa tehtävään. :(")

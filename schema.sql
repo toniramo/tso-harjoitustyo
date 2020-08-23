@@ -32,3 +32,32 @@ CREATE TABLE chapters
     creator_id INTEGER REFERENCES users (id),
     created_at TIMESTAMP
 );
+
+CREATE TABLE exercises
+(
+    id SERIAL PRIMARY KEY,
+    ordinal INTEGER,
+    name TEXT,
+    question TEXT,
+    course_id INTEGER REFERENCES courses (id),
+    chapter_id INTEGER REFERENCES chapters (id),
+    creator_id INTEGER REFERENCES users (id),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE choices
+(
+    id SERIAL PRIMARY KEY,
+    correct BOOLEAN,
+    description TEXT,
+    exercise_id INTEGER REFERENCES exercises (id),
+    created_at TIMESTAMP
+);
+
+CREATE TABLE answers
+(
+    exercise_id INTEGER REFERENCES exercises (id),
+    choice_id INTEGER REFERENCES choices (id),
+    user_id INTEGER REFERENCES users (id),
+    answered_at TIMESTAMP
+);
