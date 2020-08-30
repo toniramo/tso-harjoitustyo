@@ -80,12 +80,15 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 
 Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjkäyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
 
+Sovelluksen käsittelemät sivupyynnöt toteutetaan moduulissa routes.py eikä sen funktiolilla ole suoraa yhteyttä tietokantaan, vaan se kutsuu moduuleita users.py, courses.py tai course_contents.py riippuen siitä, mitä tietoa käsitellään. Käyttäjätietojen käsittelyyn liittyvät pyynnöt käsitellään users.py kautta, kurssien  tietojen lukemisen ja tallennuksen hoitaa courses.py ja kurssien sisältöjen (lukujen ja tehtävien) lukemisesta ja tallentamisesta vastaa course_contents.py.
+
 Sovelluksessa käytettävien tietojen pysyväistallennuseen käytetään PostgreSQL-tietokantaa.
 
 ### <a name="dbrakenne"></a>Tietokannan rakenne
 
 Tietokannassa on käytössä seuraavat taulut:
 - Users (sovelluksen käyttäjätiedot)
+- Roles (käyttäjäroolit)
 - Courses (kurssit)
 - Participants (kurssien osallistujat)
 - Chapters (kurssien luvut)
@@ -102,7 +105,14 @@ CREATE TABLE users
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     first_name TEXT,
-    last_name TEXT
+    last_name TEXT,
+    role_id INTEGER REFERENCES roles (id)
+);
+
+CREATE TABLE roles
+(
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE
 );
 
 CREATE TABLE courses
@@ -161,49 +171,60 @@ CREATE TABLE answers
 );
 ```
 
-## <a name="toteutus"></a>Toteutus tällä hetkellä (Välipalautus 3)
+Lisäksi tietokantaan lisätään käyttöönoton yhteydessä roolit opiskelijalle, opettajalle ja ylläpitäjälle:
+```
+INSERT INTO roles (name)
+VALUES ('student'), ('teacher'), ('admin');
+```
 
-Tällä hetkellä sovelluksen toiminnallisuuksista on toteutettu seuraavaa:
+## <a name="toteutus"></a>Toteutus (loppupalautus)
 
-Ennen kirjautumista käyttäjäjä voi:
+Sovelluksen toteutus on kuvattu alla käyttäjäroolit huomioiden.
+
+Ennen kirjautumista kaikki käyttäjät voivat:
 
 - Tarkastella etusivua
 - Kirjautua sisään tunnuksella ja salasanalla
-- Luoda uuden tunnuksen
+- Luoda uuden *opiskelija*-tasoisen tunnuksen
 
-Kirjauduttuaan käyttäjä voi:
+Kirjauduttuaan *kaikki *käyttäjät voivat:
 
 - Tarkastella etusivua
-- Hallita kursseja:
-  - Hakea kursseja
-  - Tarkastella kurssien sivuja
-  - Ilmoittautua kursseille
-  - Luoda uuden kurssin
-- Hallita, tarkastella ja käyttää kurssien sisältöä:
-  - Luoda kursseille uusia lukuja, jotka sisältävät luvun järjestysluvun, nimen ja tekstiä
-  - Muokata jo luotuja lukuja
-  - Luoda lukujen alle tehtäviä sisältäen tehtävän järjestysluvun, nimen, kysymyksen ja käyttäjän määrittelemän määrän vastausvaihtoehtoja (vaihtoehtoja on vähintään yksi, useampi voi olla oikein)
-  - Vastata lukujen tehtäviin (vain kerran)
-  - Nähdä oliko oma vastaus oikein vai väärin ja mikä/mitkä olisivat olleet oikeita vastauksia
-  - Nähdä kurssin tehtävien yhteenvedon (kpl vastauksista oikein, väärin ja vastauksia yhteensä)
+- Hakea kursseja
+- Ilmoittautua kursseille
+- Katsoa kurssien etusivua sisältäen kurssin opettajan, kurssien kuvauksen ja osallistujat
+- Ilmoittauduttaan kurssille:
+  - Tarkastella kurssin lukuja
+  - Ratkaista kurssin lukujen tehtäviä ja nähdä oliko vastaus oikein vai väärin sekä mitkä vastauksista olisi olleet oikein
+      - Opettajien ja ylläpitäjien vastauksia ei tallenneta tietokantaan, vaan he voivat kokeilla vastauksia rajattomasti ja tarkastella, miltä sivu näyttää opiskelijan näkökulmasta. 
+      - Opiskelijat voivat vastata vain kerran ja tieto tallentuu tietokantaan
 
-Huomaa, että alkuperäiseen suunnitelmaan nähden, sovelluksesta puuttuu vielä seuraavia olennaisia toimintoja:
+Kirjauduttuaan vain *opettajat* ja *ylläpitäjät* voivat:
 
-- Käyttäjäroolien hallinta:
-  - Eri käyttäjäroolit ja toimintojen rajaus roolin perusteella (esim. kurssisisältöjen hallinta)
-  - Käyttäjätietojen muokkausmahdollisuus
-- Sisällön hallinta:
-  - Käyttäjän luoman sisällön poistamismahdollisuus
-  - Kurssisisältöjen näkyvyys sen perusteella onko käyttäjä ilmoittautunut vai ei (nyt ilmoittautumisella ei ole väliä)
+- Tarkastella kurssien sisältöä eli lukuja ja tehtäviä ilmoittautumatta
+- Luoda uuden kurssin, jolloin käyttäjä lisätään automaattisesti kurssin vastuuopettajaksi. (Tätä ei voi tällä hetkellä muuttaa)
+- Ilmottauduttuaan kurssille tai luotuaan itse kurssin:
+  - Tarkastella kurssin tehtävien vastausten yhteenvetoa kurssin etusivulla
+  - Luoda uusia lukuja ja muokata vanhoja
+  - Luoda uusia tehtäviä lukujen alle tai luoda vanhoja
 
-Toisin sanoen, kaikki käyttäjät ovat samanarvoisia ja voivat sekä nähdä että muokata sisältöä riippumatta siitä, onko käyttäjä oikeasti opettaja vai oppilas tai ilmottautunut kurssille vai ei.
+Kirjauduttuaan vain *ylläpitäjät* voivat:
+- Muokata kurssien sisältöä (lukuja ja tehtäviä) ilmottautumatta
+- Tarkastella kaikkia käyttäjätunnuksia ja muokata näiden tietoja (etunimi, sukunimi, käyttäjärooli)
 
 ## <a name="kirjautuminen"></a>Kirjautuminen Herokuun
 
 Sovellukseen pääsee Herokussa osoitteessa: https://tso-harjoitustyo.herokuapp.com/ .
 
-Voit luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
+Sovelluksesta löytyy valmiiksi seuraavat käyttäjätunnukset:
 
-On suositeltavaa luoda muutama käyttäjä, erilaisia kursseja, kurssien alle lukuja ja lukujen alle tehtäviä. Koita myös ratkaista tekemiäsi tehtäviä. Kokeile rohkeasti löydätkö ohjelmasta virheitä tai epäjohdonmukaisuuksia syötteillä, joihin ei olla toistaiseksi kehitysvaiheessa huomattu varautua.
+- Opiskelija: 
+  - käyttäjänimi: "opiskelija", salasana: "student"
+- Opettaja:
+  - käyttäjänimi: "opettaja" salasana: "teacher"
+- Ylläpitäjä:
+  - käyttäjänimi: "yllapitaja" salasana: "admin"
+
+Voit myös halutessasi luoda itsellesi omat testitunnukset/-tunnuksia sovelluksen sivulta https://tso-harjoitustyo.herokuapp.com/register.
 
 [Palaa ylös](#ylos)

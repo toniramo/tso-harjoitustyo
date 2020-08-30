@@ -14,9 +14,6 @@ CREATE TABLE roles
     name TEXT UNIQUE
 );
 
-INSERT INTO roles (name)
-VALUES ('student'), ('teacher'), ('admin');
-
 CREATE TABLE courses
 (
     id SERIAL PRIMARY KEY,
@@ -71,3 +68,6 @@ CREATE TABLE answers
     user_id INTEGER REFERENCES users (id),
     answered_at TIMESTAMP
 );
+
+INSERT INTO roles (name)
+VALUES ('student'), ('teacher'), ('admin');
