@@ -1,14 +1,18 @@
 {% extends "layout.html" %}
-
-{% block title %}Etusivu{% endblock %}
+{% block title %}
+    Etusivu
+{% endblock %}
 {% block content %}
-<p>Tervetuloa opetussovellus Huhuu'seen!</p>
-
-{% if session["user_id"] %}
-Olet kirjautunut käyttäjänä <b>{{ session["username"] }}</b>.
-{% else %}
-Mikäli sinulla on jo tunnus, <a href="/login">kirjaudu sisään</a>. <br>
-Jos sinulla ei vielä ole tunnusta, voit luoda sen <a href="/register">täältä</a>.
-{% endif %}
-<p><img src="/static/logo.svg" alt="logo" height="200px"> Huhuu?! </p>
+    <p>Tervetuloa opetussovellus Huhuu'seen!</p>
+    {% if session["user_id"] %}
+        Olet kirjautunut käyttäjänä <b>{{ session["username"] }}</b> 
+        ( {% if session["role"] == 'student' %}opiskelija
+        {% elif session["role"] == 'teacher' %}opettaja
+        {% elif session["role"] == 'admin' %}ylläpitäjä
+        {% endif %}).
+    {% else %}
+        Mikäli sinulla on jo tunnus, <a href="/login">kirjaudu sisään</a>. <br>
+        Jos sinulla ei vielä ole tunnusta, voit luoda sen <a href="/register">täältä</a>.
+    {% endif %}
+    <p><img src="/static/logo.svg" alt="logo" height="200px"> Huhuu?! </p>
 {% endblock %}

@@ -17,13 +17,14 @@
             <ul>
                 <li><a href="/" {% if request.path == "/" %} class="active" {% endif %}>Etusivu</a></li>
                 <li><a href="/courses" {% if "courses" in request.path %} class="active" {% endif %}>Kurssit</a></li>
+                {% if session["role"] == "admin" %}<li><a href="/usermanagement" {% if "/usermanagement" in request.path %} class="active" {% endif %}>Käyttäjähallinta</a></li>{% endif %}
                 <li><a href="/logout" >Kirjaudu ulos</a></li>
             </ul>
                 {% if "courses" in request.path %}
                 <ul class="second_nav">
                     <li><a href="/courses" {% if request.path == "/courses" %} class="active" {% endif %}>Ilmoittautumiset</a></li>
                     <li><a href="/courses/search" {% if "/courses/search" in request.path %} class="active" {% endif %}>Kurssihaku</a></li>
-                    <li><a href="/courses/new" {% if "/courses/new" in request.path %} class="active" {% endif %}>Luo uusi kurssi</a></li>
+                    {% if session["role"] in ["teacher","admin"] %}<li><a href="/courses/new" {% if "/courses/new" in request.path %} class="active" {% endif %}>Luo uusi kurssi</a></li>{% endif %}
                 </ul>
                 {% endif %}
             {% else %}

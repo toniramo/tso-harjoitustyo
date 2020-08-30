@@ -4,8 +4,18 @@ CREATE TABLE users
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     first_name TEXT,
-    last_name TEXT
+    last_name TEXT,
+    role_id INTEGER REFERENCES roles (id)
 );
+
+CREATE TABLE roles
+(
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
+INSERT INTO roles (name)
+VALUES ('student'), ('teacher'), ('admin');
 
 CREATE TABLE courses
 (

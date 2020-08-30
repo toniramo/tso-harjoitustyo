@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+{{ message }}
+{% if session["user_id"] == user[4] %}
+<h1>Omien käyttäjätietojen muokkaus</h1>
+{% else %}
+<h1>Käyttäjätietojen muokkaus</h1>
+{% endif %}
+<img src="/static/logo.svg" alt="logo" height="40px"><br>
+
+<form action="/usermanagement/user{{ user[4] }}" method="POST">
+    <input type="hidden" name="user_id" value="{{ user[4] }}">
+    <table>
+        <tr>
+            <td>Käyttäjänimi:</td>
+            <td>{{ user[0] }}</td>
+        </tr>
+        <tr>
+            <td>Etunimi:</td>
+            <td><input type="text" name="first_name" value="{{ user[1] }}"></td>
+        </tr>
+        <tr>
+            <td>Sukunimi:</td>
+            <td><input type="text" name="last_name" value="{{ user[2] }}"></td>
+        </tr>
+        <tr>
+            <td>Rooli:</td>
+            <td>
+                <select name="role_id">
+                    {% for role in roles %}
+                    <option value={{ role[0] }} {% if user[3] == role[1] %} selected="selected" {% endif %}>
+                        {% if role[1] == "student" %}opiskelija
+                        {% elif role[1] == "teacher" %}opettaja
+                        {% elif role[1] == "admin" %}ylläpitäjä
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Päivitä tiedot">
+</form>
+
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
+    Mikäli muokkaat omia tietojasi, kannattaa kirjautua uudelleen sisään istunnon tietojen päivittymiseksi.
+</p>
+{% endblock %}

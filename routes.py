@@ -1,14 +1,12 @@
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, session
 from app import app
 import users
 import courses
 import course_contents
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -44,27 +42,56 @@ def register():
         else:
             return render_template("error.html", message="Uuden käyttäjän luominen ei onnistunut. Syynä tähän voi olla varattu käyttäjänimi.")
 
+@app.route("/usermanagement/", methods=["GET"])
+def usermanagement():
+    if session["role"] != "admin":
+        return render_template("error.html", message="Sinulla ei ole oikeuksia tälle sivulle.")
+    return render_template("usermanagement.html", users=users.get_all_users())
+        
+
+@app.route("/usermanagement/user<int:id>", methods=["GET","POST"])
+def modifyuser(id):
+    if session["role"] != "admin":
+        return render_template("error.html", message="Sinulla ei ole oikeuksia tälle sivulle.")
+    roles = users.get_roles()
+    if request.method == "GET":
+        user = users.get_user(id)
+        return render_template("modifyuser.html", user=user, roles=roles)
+    if request.method == "POST":
+        if users.update_user(request.form):
+            user = users.get_user(id)
+            return render_template("modifyuser.html", user=user, roles=roles, message="Käyttäjätiedot päivitetty onnistuneesti!")
+        else:
+            return render_template("error.html", message="Käyttäjätietojen päivitys epäonnistui.")
 
 @app.route("/courses")
 def courses_index():
+    if session["user_id"] == None:
+        return redirect("/")
     courses_of_user = courses.get_courses_of_user()
     return render_template("courses/index.html", courses_of_user=courses_of_user)
 
 
 @app.route("/courses/course<int:id>")
 def course(id):
+    if session["user_id"] == None:
+        return redirect("/")
     course = courses.get_course(id)
+    enrolled = courses.user_enrolled(session["user_id"],id)
     participants = courses.get_participants_of_course(id)
     chapters = course_contents.get_course_chapters(id)
     exercise_results = course_contents.get_course_result_summary(id)
     return render_template("courses/course.html",
                            course=course,
+                           enrolled = enrolled,
                            participants=participants,
                            chapters=chapters,
                            exercise_results=exercise_results)
 
 @app.route("/courses/search")
 def course_search():
+    if session["user_id"] == None:
+        return redirect("/")
     return render_template("courses/search.html",
                            include_enrolled=True,
                            order_by="name")
@@ -72,6 +99,8 @@ def course_search():
 
 @app.route("/courses/search/result", methods=["GET"])
 def course_search_result():
+    if session["user_id"] == None:
+        return redirect("/")
     search_string = request.args["search_string"]
     teacher = request.args["teacher"]
     include_enrolled = bool(request.args.get("include_enrolled"))
@@ -92,6 +121,8 @@ def course_search_result():
 
 @app.route("/courses/enroll/course<int:id>", methods=["POST"])
 def enroll_course(id):
+    if session["user_id"] == None:
+        return redirect("/")
     if courses.enroll_course(id):
         return redirect("/courses/course"+str(id))
     else:
@@ -100,6 +131,8 @@ def enroll_course(id):
 
 @app.route("/courses/new", methods=["GET", "POST"])
 def new_course():
+    if session["role"] not in ["teacher", "admin"]:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia lisätä kurssia.")
     if request.method == "GET":
         return render_template("/courses/new.html")
     if request.method == "POST":
@@ -115,11 +148,12 @@ def new_course():
 
 @app.route("/courses/course<int:id>/chapters/new", methods=["GET", "POST"])
 def new_chapter(id):
+    if session["role"] not in ["teacher", "admin"]:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
     chapter_count = len(course_contents.get_course_chapters(id))
     if request.method == "GET":
         return render_template("/courses/chapters/new.html", course_id=id, chapter_count=chapter_count)
     if request.method == "POST":
-        print(request.form)
         ordinal = request.form["ordinal"]
         name = request.form["name"]
         content = request.form["content"]
@@ -140,6 +174,8 @@ def chapter(course_id, chapter_id):
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/modify", methods=["GET", "POST"])
 def modify_chapter(course_id, chapter_id):
+    if session["role"] not in ["teacher", "admin"]:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
     if request.method == "GET":
         chapter = course_contents.get_chapter(chapter_id)
         return render_template("/courses/chapters/modify.html", course_id=course_id, chapter_id=chapter_id, chapter=chapter)
@@ -149,9 +185,10 @@ def modify_chapter(course_id, chapter_id):
         else:
             return render_template("error.html", message="Jokin meni pieleen muokatessa lukua. :(")
 
-
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/new", methods=["GET", "POST"])
 def new_exercise(course_id, chapter_id):
+    if session["role"] not in ["teacher", "admin"]:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
     exercise_count = len(course_contents.get_chapter_exercises(chapter_id))
     if request.method == "GET":
         return render_template("/courses/exercises/new_initial.html", course_id=course_id, chapter_id=chapter_id, choices=4, exercise_count=exercise_count)

@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<p>
+    <input type="text" id="usersearch" onkeyup="filterUsers()" placeholder="Hae käyttäjää hakusanalla"><br>
+    <form id="searchby">
+        Hae käyttäjää 
+    <input type="radio" name="searchby" value="0" onclick="filterUsers()" checked>käyttäjänimen
+    <input type="radio" name="searchby" value="1" onclick="filterUsers()">etunimen
+    <input type="radio" name="searchby" value="2" onclick="filterUsers()">sukunimen
+    <input type="radio" name="searchby" value="3" onclick="filterUsers()">roolin perusteella.
+    </form>
+</p>
+
+<table id="users">
+    <tr>
+        <th>Käyttäjänimi</th>
+        <th>Etunimi</th>
+        <th>Sukunimi</th>
+        <th>Käyttäjärooli</th>
+        <th></th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td><a href="/usermanagement/user{{ user[4] }}">{{ user[0] }}</a></td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+        <td>
+            {% if user[3] == "student" %}opiskelija
+            {% elif user[3] == "teacher" %}opettaja
+            {% elif user[3] == "admin" %}ylläpitäjä
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
+    Mikäli haluat muokata käyttäjän tietoja, klikkaa haluttua käyttäjänimeä.
+</p>
+
+<script>
+function filterUsers() {
+    var input, filter, table, tr, td, i, searchcolumn, text;
+    input = document.getElementById("usersearch");
+    filter = input.value.toLowerCase();
+    table = document.getElementById("users");
+    tr = table.getElementsByTagName("tr");
+    searchcolumn = document.querySelector("input[name=searchby]:checked").value;
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[searchcolumn];
+        if (td) {
+            text = td.textContent || td.innerText;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

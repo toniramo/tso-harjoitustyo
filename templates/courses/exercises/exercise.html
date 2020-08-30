@@ -39,7 +39,7 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
 
 <p>
     {% if answer != None %}
-        {% if answer == correct_choice[0] %}
+        {% if answer in correct_choice %}
         <img src="/static/logo.svg" alt="logo" height="40px"> Vastauksesi on OIKEIN, hienoa!
         {% else %}
         Vastauksesi on valitettavasti väärin. <large>:(</large>

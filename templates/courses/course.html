@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 
 {% block content %}
-{% set enrolled = {'flag': False} %}
 <h1>{{ course[0] }}</h1>
 
 <ul>
     <li>
-        Opettaja: {{ course[2] }}
+        Vastuuopettaja: {{ course[2] }} {% if session["username"] == course[2] %} (sinä) {% endif %}
     </li>
     <li>
         {{ course[1] }}
@@ -21,8 +20,9 @@
     </li>
 {% endfor %}
 </ul>
+{% if session["role"] in ["teacher","admin"] %}
 <a href="/courses/course{{ course[3] }}/chapters/new">Luo uusi luku</a>
-
+{% endif %}
 <p>
     <h2>Osallistujat</h2>
     <ul>
@@ -30,11 +30,13 @@
         <li>
             {{ participant[0] }}
             {% if participant[0] == course[2] %} 
-            <small>(kurssin opettaja)</small> 
+            <small>(kurssin vastuuopettaja)</small>
+            {% elif participant[2] == "teacher" %}
+            <small>(opettaja)</small> 
+            {% elif participant[2] == "admin" %}
+            <small>(ylläpitäjä)</small>
             {% endif %}
             {% if session["user_id"]|int() == participant[1]|int() %} 
-                {% if enrolled.update({'flag':True}) %}
-                {% endif %}
             <small>(sinä)</small> 
             {% endif %}
         </li>
@@ -43,18 +45,20 @@
 </p>
 
 <form action="/courses/enroll/course{{ course[3] }}" method="POST">
-    <input type="submit" {% if enrolled.flag %}value="Olet liittynyt kurssille" disabled="disabled"{% else %} value="Liity kurssille"{% endif %}>
+    <input type="submit"
+        {% if enrolled %}value="Olet liittynyt kurssille" disabled="disabled"
+        {% else %}value="Liity kurssille"{% endif %}>
 </form>
 
-{% if enrolled.flag %}
+{% if enrolled and session["role"] in ["teacher","admin"] %}
     <h2>Tuloksien yhteenveto</h2>
     <table>
         <tr>
-            <th>Luku</th>
-            <th>Tehtävä</th>
-            <th>Oikeita vastauksia</th>
-            <th>Vääriä vastauksia</th>
-            <th>Vastauksia yhteensä</th>
+            <th align="left">Luku </th>
+            <th align="left">Tehtävä </th>
+            <th align="left">Oikeita<br>vastauksia </th>
+            <th align="left">Vääriä<br>vastauksia </th>
+            <th align="left">Vastauksia<br>yhteensä</th>
         </tr>
         {% for result in exercise_results %}
         <tr>
@@ -66,7 +70,7 @@
         </tr>
         {% endfor %}
     </table>
-    
+
 {% endif %}
 
 {% endblock %}
