@@ -5,7 +5,12 @@
 {% set correct_choice = [] %}
 
 {% block content %}
+{% if message %}
+{{ message }} <hr>
+{% endif %}
+
 Luku {{ chapter[0] }} - {{ chapter[1] }}
+
 <h1>Tehtävä {{ exercise[0] }} - {{ exercise[1] }}</h1>
 {% for line in exercise[2].rsplit('\n') %}
 <p>{{ line }}</p>
@@ -16,7 +21,7 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
         {% for choice in choices %}
         <tr>
             <td>
-                <input type="radio" name="choice" value="{{ choice[0] }}" {% if answer != None %} disabled {% endif %} {% if answer == choice[0] %} checked {% endif %}>
+                <input type="radio" name="choice" value="{{ choice[0] }}" required="required" {% if answer != None %} disabled {% endif %} {% if answer|int == choice[0] %} checked {% endif %}>
             </td>
             <td>
                 <label>{{ choice[1] }}</label>
@@ -39,7 +44,7 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
 
 <p>
     {% if answer != None %}
-        {% if answer in correct_choice %}
+        {% if answer|int in correct_choice %}
         <img src="/static/logo.svg" alt="logo" height="40px"> Vastauksesi on OIKEIN, hienoa!
         {% else %}
         Vastauksesi on valitettavasti väärin. <large>:(</large>
@@ -51,5 +56,21 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
 </p>
 
 <a href="{{ course_path }}{{ chapter_path }}">Palaa takaisin lukuun</a>
+
+{% if session["role"] in ["teacher","admin"] %}
+<hr>
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi lisähuomio opettajille ja ylläpitäjille:</small> <br>
+    Opettajana tai ylläpitäjänä voit katsella, miltä tehtävä oppilaiden näkökulmasta näyttää. Vastaustasi ei tallenneta, mutta näet sen samalla tavalla kuin miltä se olisi oppilaasta näyttänyt.
+</p>
+    {% if answer %}
+    <p>
+    Mikäli haluat vastata uudelleen, <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}">lataa tehtäväsivu uudelleen.</a>
+    </p>    
+    {% endif %}
+    {% if session["role"] == "teacher" and enrolled %}
+    Voit muokata tehtävää <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}/modify">tästä.</a>
+    {% endif %}
+{% endif %}
 
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Muokkaa tehtävää {{ exercise[1] }}</h1>
+<form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}/modify" method="POST">
+    <p>
+        <label>Tehtävän järjestysluku</label>
+        <input type="number" min="1" name="ordinal" value="{{ exercise[0] }}" style="width: 4em"> <br>
+        <input type="hidden" name="exercise_id" value="{{ exercise_id }}"
+        <label>Tehtävän nimi</label>
+        <input type="text" name="name" required="required" value="{{ exercise[1] }}"> <br>
+        <label>Kysymys</label> <br>
+        <textarea name="question" rows="10" cols="80" required="required">{{ exercise[2] }}</textarea>
+    </p>
+    <table>
+        <tr>
+            <td></td>
+            <td>Vastausvaihtoehto</td>
+            <td>Oikea vastaus</td>
+        </tr>
+        {% set var = {'count': 0} %}
+        {% for choice in choices %}    
+        {% if var.update({'count': var.count+1 }) %} {% endif %}
+        <tr>
+            <td>{{ var.count }}</td>
+            <td><input type="text" name="choice{{ choice[0] }}" value="{{ choice[1] }}" required="required"></td>
+            <td><input type="checkbox" name="correct{{ choice[0] }}" {% if choice[2] %}checked{% endif %}></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p>
+        <input type="hidden" name="course_id" value="{{ course_id }}">
+        <input type="hidden" name="chapter_id" value="{{ chapter_id }}">
+        <input type="submit" value="Päivitä tehtävä" name="button">
+    </p>
+</form>
+
+<p>
+    Voit palata takaisin
+    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">luvun sivulle</a> tai 
+    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}">tehtäväsivulle</a>
+    tallentamatta muutoksia.
+</p>
+{% endblock %}

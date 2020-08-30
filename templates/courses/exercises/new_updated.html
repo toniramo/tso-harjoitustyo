@@ -5,7 +5,7 @@
 <form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/new" method="POST">
     <p>
         <label>Tehtävän järjestysluku</label>
-        <input type="number" min="1" name="ordinal" value="{{ form["ordinal"] }} style="width: 4em"> <br>
+        <input type="number" min="1" name="ordinal" value="{{ form["ordinal"] }}" style="width: 4em"> <br>
         <label>Tehtävän nimi</label>
         <input type="text" name="name" required="required" value="{{ form["name"] }}"> <br>
         <label>Kysymys</label> <br>
@@ -13,7 +13,8 @@
     </p>
     <label>Vastausvaihtoehjoten määrä</label> 
     <input type="number" min="1" max="20" value="{{ choices }}" name="choices">
-    <input type="submit" value="Päivitä vaihtoehtojen määrä" name="button" id="secondary_button">
+    <input type="submit" value="Päivitä vaihtoehtojen määrä" name="button" id="secondary_button"><br>
+    <small>Huomaa, että vaihtoehtojen määrää ei voi tällä hetkellä muuttaa jälkikäteen.</small><br>
     <table>
         <tr>
             <td></td>
@@ -35,7 +36,9 @@
         <input type="hidden" name="chapter_id" value="{{ chapter_id }}">
         <input type="submit" value="Luo tehtävä" name="button">
     </p>
-
-
 </form>
+
+<p>
+    Voit palata <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">takaisin luvun sivulle</a>, jolloin tehtävä jää luomatta.
+</p>
 {% endblock %}

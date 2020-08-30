@@ -16,12 +16,28 @@
 <ul>
 {% for chapter in chapters %}
     <li>
-        {{ chapter[1] }}) <a href="/courses/course{{ course[3] }}/chapters/chapter{{ chapter[0] }}">{{ chapter[2] }}</a>
+        {{ chapter[1] }}) 
+        {% if session["role"] == "student" and not enrolled %}
+        {{ chapter[2] }}
+        {% else %}
+        <a href="/courses/course{{ course[3] }}/chapters/chapter{{ chapter[0] }}">{{ chapter[2] }}</a>
+        {% endif %}
     </li>
 {% endfor %}
+
+{% if session["role"] == "student" and not enrolled %}
+<img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
+Liity kurssille, mikäli haluat tarkkastella sen sisältöä. 
+{% endif %}
+
 </ul>
-{% if session["role"] in ["teacher","admin"] %}
+{% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
 <a href="/courses/course{{ course[3] }}/chapters/new">Luo uusi luku</a>
+{% endif %}
+
+{% if session["role"] == "teacher" and not enrolled %}
+<img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
+Liity kurssille, mikäli haluat muokata sen sisältöä. 
 {% endif %}
 <p>
     <h2>Osallistujat</h2>

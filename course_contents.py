@@ -9,9 +9,9 @@ def get_course_chapters(course_id):
     return result.fetchall()
 
 
-def get_chapter(chapter_id):
-    sql = "SELECT ordinal, name, content FROM chapters WHERE id=:chapter_id"
-    result = db.session.execute(sql, {"chapter_id": chapter_id})
+def get_chapter(course_id, chapter_id):
+    sql = "SELECT ordinal, name, content FROM chapters WHERE id=:chapter_id AND course_id=:course_id"
+    result = db.session.execute(sql, {"chapter_id": chapter_id, "course_id": course_id})
     return result.fetchone()
 
 
@@ -31,8 +31,8 @@ def add_chapter(ordinal, name, content, course_id):
                                     })
         db.session.commit()
         return result.fetchone()[0]
-    except Exception as e:
-        print(e)
+    except:
+        return None
 
 
 def update_chapter(parameters):
@@ -41,8 +41,7 @@ def update_chapter(parameters):
         db.session.execute(sql, parameters)
         db.session.commit()
         return True
-    except Exception as e:
-        print(e)
+    except:
         return False
 
 
@@ -52,9 +51,9 @@ def get_chapter_exercises(chapter_id):
     return result.fetchall()
 
 
-def get_exercise(exercise_id):
-    sql = "SELECT ordinal, name, question FROM exercises WHERE id=:exercise_id"
-    result = db.session.execute(sql, {"exercise_id": exercise_id})
+def get_exercise(course_id, chapter_id, exercise_id):
+    sql = "SELECT ordinal, name, question FROM exercises WHERE id=:exercise_id AND course_id=:course_id AND chapter_id=:chapter_id"
+    result = db.session.execute(sql, {"exercise_id": exercise_id, "course_id":course_id,"chapter_id":chapter_id})
     return result.fetchone()
 
 
@@ -72,9 +71,29 @@ def add_exercise(parameters):
             add_choices(parameters)
         db.session.commit()
         return parameters["exercise_id"]
+    except:
+        return None
+
+def update_exercise_and_choices(parameters, choices): 
+    try:
+        sql = "UPDATE exercises SET ordinal=:ordinal, name=:name, question=:question WHERE id=:exercise_id"
+        db.session.execute(sql, parameters)
+        sql = "UPDATE choices  SET description=:description, correct=:correct WHERE id =:choice_id"
+        for choice in choices:
+            if "correct"+str(choice[0]) in parameters:
+                correct = True
+            else:
+                correct = False
+            db.session.execute(sql, {
+                    "correct":correct,
+                    "description": parameters["choice"+str(choice[0])],
+                    "choice_id":choice[0]
+            })
+        db.session.commit()
+        return True
     except Exception as e:
         print(e)
-        return None
+        return False
 
 def add_choices(parameters):
     sql = "INSERT INTO choices (correct, description, exercise_id, created_at) \
@@ -106,7 +125,7 @@ def add_answer(exercise_id, choice_id):
                            })
         db.session.commit()
         return True
-    except Exception as e:
+    except:
         return False
 
 def get_answer_of_current_user(exercise_id):
@@ -122,14 +141,18 @@ def get_answer_of_current_user(exercise_id):
         return None
 
 def get_course_result_summary(course_id):
-    sql = "SELECT (SELECT chapters.name FROM chapters WHERE id = exercises.chapter_id) as chapter, \
+    sql = "SELECT chapters.name, \
             exercises.name, \
             SUM(CASE WHEN (SELECT correct FROM choices WHERE id = answers.choice_id) THEN 1 ELSE 0 END) as correct_answers,\
-            SUM(CASE WHEN (SELECT correct FROM choices WHERE id = answers.choice_id) THEN 0 ELSE 1 END) as wrong_answers, \
-            COUNT(*) as total \
+            SUM(CASE WHEN (SELECT NOT(correct) FROM choices WHERE id = answers.choice_id) THEN 1 ELSE 0 END) as wrong_answers, \
+            SUM(CASE WHEN (SELECT TRUE FROM choices WHERE id = answers.choice_id) THEN 1 ELSE 0 END) as total, \
+            exercises.ordinal, \
+            chapters.ordinal \
             FROM exercises \
             LEFT JOIN answers ON answers.exercise_id=exercises.id \
+            JOIN chapters ON chapters.id = exercises.chapter_id \
             WHERE exercises.course_id =:course_id \
-            GROUP BY exercises.id"
+            GROUP BY exercises.id, chapters.id \
+            ORDER BY chapters.ordinal, exercises.ordinal"
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()

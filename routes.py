@@ -20,7 +20,6 @@ def login():
         else:
             return render_template("error.html", message="Kirjautuminen epäonnistui. Tarkista, että käytät oikeaa tunnusta ja salasanaa.")
 
-
 @app.route("/logout")
 def logout():
     users.logout()
@@ -44,6 +43,8 @@ def register():
 
 @app.route("/usermanagement/", methods=["GET"])
 def usermanagement():
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] != "admin":
         return render_template("error.html", message="Sinulla ei ole oikeuksia tälle sivulle.")
     return render_template("usermanagement.html", users=users.get_all_users())
@@ -51,6 +52,8 @@ def usermanagement():
 
 @app.route("/usermanagement/user<int:id>", methods=["GET","POST"])
 def modifyuser(id):
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] != "admin":
         return render_template("error.html", message="Sinulla ei ole oikeuksia tälle sivulle.")
     roles = users.get_roles()
@@ -66,7 +69,7 @@ def modifyuser(id):
 
 @app.route("/courses")
 def courses_index():
-    if session["user_id"] == None:
+    if "user_id" not in session:
         return redirect("/")
     courses_of_user = courses.get_courses_of_user()
     return render_template("courses/index.html", courses_of_user=courses_of_user)
@@ -74,7 +77,7 @@ def courses_index():
 
 @app.route("/courses/course<int:id>")
 def course(id):
-    if session["user_id"] == None:
+    if "user_id" not in session:
         return redirect("/")
     course = courses.get_course(id)
     enrolled = courses.user_enrolled(session["user_id"],id)
@@ -90,7 +93,7 @@ def course(id):
 
 @app.route("/courses/search")
 def course_search():
-    if session["user_id"] == None:
+    if "user_id" not in session:
         return redirect("/")
     return render_template("courses/search.html",
                            include_enrolled=True,
@@ -99,7 +102,7 @@ def course_search():
 
 @app.route("/courses/search/result", methods=["GET"])
 def course_search_result():
-    if session["user_id"] == None:
+    if "user_id" not in session:
         return redirect("/")
     search_string = request.args["search_string"]
     teacher = request.args["teacher"]
@@ -121,7 +124,7 @@ def course_search_result():
 
 @app.route("/courses/enroll/course<int:id>", methods=["POST"])
 def enroll_course(id):
-    if session["user_id"] == None:
+    if "user_id" not in session:
         return redirect("/")
     if courses.enroll_course(id):
         return redirect("/courses/course"+str(id))
@@ -131,6 +134,8 @@ def enroll_course(id):
 
 @app.route("/courses/new", methods=["GET", "POST"])
 def new_course():
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] not in ["teacher", "admin"]:
         return render_template("error.html", message="Sinulla ei ole oikeuksia lisätä kurssia.")
     if request.method == "GET":
@@ -148,8 +153,12 @@ def new_course():
 
 @app.route("/courses/course<int:id>/chapters/new", methods=["GET", "POST"])
 def new_chapter(id):
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] not in ["teacher", "admin"]:
         return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
+    if session["role"] == "teacher" and not courses.user_enrolled(session["user_id"],id):
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä ennen kuin olet ilmottautunut kurssille.")
     chapter_count = len(course_contents.get_course_chapters(id))
     if request.method == "GET":
         return render_template("/courses/chapters/new.html", course_id=id, chapter_count=chapter_count)
@@ -166,18 +175,30 @@ def new_chapter(id):
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>")
 def chapter(course_id, chapter_id):
-    chapter = course_contents.get_chapter(chapter_id)
-    # TODO check if user has enrolled
+    if "user_id" not in session:
+        return redirect("/")
+    chapter = course_contents.get_chapter(course_id, chapter_id)
+    if chapter == None:
+        return render_template("error.html", message="Lukua ei löydy kyseessä olevan kurssin alta")
+    enrolled = courses.user_enrolled(session["user_id"],course_id)
+    if session["role"] == "student" and not enrolled:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia tarkastella kurssin sisältöä ennen kuin olet ilmoittautunut kurssille.")
     exercises = course_contents.get_chapter_exercises(chapter_id)
-    return render_template("/courses/chapters/chapter.html", chapter=chapter, chapter_id=chapter_id, course_id=course_id, exercises=exercises)
+    return render_template("/courses/chapters/chapter.html", chapter=chapter, chapter_id=chapter_id, course_id=course_id, exercises=exercises, enrolled=enrolled)
 
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/modify", methods=["GET", "POST"])
 def modify_chapter(course_id, chapter_id):
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] not in ["teacher", "admin"]:
         return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
+    if session["role"] == "teacher" and not courses.user_enrolled(session["user_id"],course_id):
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä ennen kuin olet ilmottautunut kurssille.")
     if request.method == "GET":
-        chapter = course_contents.get_chapter(chapter_id)
+        chapter = course_contents.get_chapter(course_id, chapter_id)
+        if chapter == None:
+            return render_template("error.html", message="Lukua ei löydy kyseessä olevan kurssin alta.")
         return render_template("/courses/chapters/modify.html", course_id=course_id, chapter_id=chapter_id, chapter=chapter)
     if request.method == "POST":
         if course_contents.update_chapter(request.form):
@@ -187,34 +208,78 @@ def modify_chapter(course_id, chapter_id):
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/new", methods=["GET", "POST"])
 def new_exercise(course_id, chapter_id):
+    if "user_id" not in session:
+        return redirect("/")
     if session["role"] not in ["teacher", "admin"]:
         return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
+    if session["role"] == "teacher" and not courses.user_enrolled(session["user_id"],course_id):
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä ennen kuin olet ilmottautunut kurssille.")
+    if course_contents.get_chapter(course_id, chapter_id) == None:
+        return render_template("error.html", message="Lukua ei löydy kurssin alta. Teethän tehtävän olemassa olevan kurssin ja luvun alle.")
     exercise_count = len(course_contents.get_chapter_exercises(chapter_id))
     if request.method == "GET":
         return render_template("/courses/exercises/new_initial.html", course_id=course_id, chapter_id=chapter_id, choices=4, exercise_count=exercise_count)
     if request.method == "POST":
         if request.form["button"] == "Päivitä vaihtoehtojen määrä":
             choices = int(request.form["choices"])
-            print(request.form)
             return render_template("/courses/exercises/new_updated.html", course_id=course_id, chapter_id=chapter_id, choices=choices, exercise_count=exercise_count, form=request.form)
         if request.form["button"] == "Luo tehtävä":
             exercise_id = course_contents.add_exercise(request.form)
             if exercise_id != None:
+                session["message"] = "Tehtävä luotu onnistuneesti! Voit nyt katsella tehtävää opiskelijan näkökulmasta."
                 return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
             else:
                 return render_template("error.html", message="Jokin meni pieleen luodessa tehtävää. :(")
 
 @app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/exercise<int:exercise_id>", methods=["GET","POST"])
 def exercise(course_id, chapter_id, exercise_id):
-    chapter = course_contents.get_chapter(chapter_id)
-    exercise = course_contents.get_exercise(exercise_id)
+    if "user_id" not in session:
+        return redirect("/")
+    chapter = course_contents.get_chapter(course_id, chapter_id)
+    exercise = course_contents.get_exercise(course_id, chapter_id, exercise_id)
+    if chapter == None or exercise == None:
+        return render_template("error.html", message="Lukua tai tehtävää ei löydy kurssin alta.")
+    enrolled = courses.user_enrolled(session["user_id"],course_id)
+    if session["role"] == "student" and not enrolled:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia tarkastella kurssin sisältöä ennen kuin olet ilmoittautunut kurssille.")
     choices = course_contents.get_exercise_choises(exercise_id)
     answer = course_contents.get_answer_of_current_user(exercise_id)
+    if "message" in session:
+        message = session["message"]
+        del session["message"]
+    else:
+        message = None
     if request.method == "GET":
-        return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer)
+        return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer, message=message, enrolled=enrolled)
     if request.method == "POST":
-        choice_id = request.form["choice"]
+        answer = request.form["choice"]
+        if session["role"] in ["teacher","admin"]:
+            return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer, enrolled=enrolled)
         if course_contents.add_answer(exercise_id, choice_id):
             return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
         else:
             return render_template("error.html", message="Jokin meni pieleen vastatessa tehtävään. :(")
+
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/exercise<int:exercise_id>/modify", methods=["GET","POST"])
+def modify_exercise(course_id, chapter_id, exercise_id):
+    if session["role"] not in ["teacher", "admin"]:
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä.")
+    if session["role"] == "teacher" and not courses.user_enrolled(session["user_id"],course_id):
+        return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä ennen kuin olet ilmottautunut kurssille.")
+    if course_contents.get_chapter(course_id, chapter_id) == None:
+        return render_template("error.html", message="Lukua ei löydy kurssin alta. Teethän tehtävän olemassa olevan kurssin ja luvun alle.")
+    exercise = course_contents.get_exercise(course_id, chapter_id, exercise_id)
+    choices = course_contents.get_exercise_choises(exercise_id)
+    if request.method == "GET":
+        if exercise != None:
+            return render_template("courses/exercises/modify.html", exercise=exercise, choices=choices, course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id)
+        else:
+            return render_template("error.html", message="Tehtävää ei löydy kurssin luvun alta.")
+    if request.method == "POST":
+        parameters = request.form
+        print(parameters)
+        if course_contents.update_exercise_and_choices(parameters, choices):
+            session["message"] = "Tehtävän päivitys onnistui!"
+            return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
+        else:
+            return render_template("error.html", message="Jokin meni pieleen päivitettäessä tehtävää.")

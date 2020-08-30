@@ -16,7 +16,7 @@
     <li>{{ exercise[1] }}) <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise[0] }}">{{ exercise[2] }}</a></li>
     {% endfor %}
 </ul>
-{% if session["role"] in ["teacher","admin"] %}
+{% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
 <a href="{{ course_path }}{{ chapter_path }}/exercises/new">Luo uusi tehtävä</a> |
 <a href="{{ course_path }}{{ chapter_path }}/modify">Muokkaa lukua</a> | 
 {% endif %}
