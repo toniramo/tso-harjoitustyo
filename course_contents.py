@@ -106,8 +106,7 @@ def update_exercise_and_choices(parameters, choices):
                  "choice_id":choice[0]})
         db.session.commit()
         return True
-    except Exception as e:
-        print(e)
+    except:
         return False
 
 def add_choices(parameters):
