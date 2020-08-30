@@ -186,8 +186,7 @@ def new_course():
                              Käytäthän uniikkia kurssinimeä?")
 
 
-@app.route("/courses/course<int:id>\
-            /chapters/new", 
+@app.route("/courses/course<int:id>/chapters/new", 
             methods=["GET", "POST"])
 def new_chapter(id):
     if "user_id" not in session:
@@ -224,8 +223,7 @@ def new_chapter(id):
                     message="Jokin meni pieleen lisättäessä lukua. :(")
 
 
-@app.route("/courses/course<int:course_id>\
-            /chapters/chapter<int:chapter_id>")
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>")
 def chapter(course_id, chapter_id):
     if "user_id" not in session:
         return redirect("/")
@@ -249,8 +247,7 @@ def chapter(course_id, chapter_id):
             exercises=exercises, 
             enrolled=enrolled)
 
-@app.route("/courses/course<int:course_id>\
-            /chapters/chapter<int:chapter_id>/modify", 
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/modify", 
             methods=["GET", "POST"])
 def modify_chapter(course_id, chapter_id):
     if "user_id" not in session:
@@ -287,9 +284,7 @@ def modify_chapter(course_id, chapter_id):
                     "error.html", 
                     message="Jokin meni pieleen muokatessa lukua. :(")
 
-@app.route("/courses/course<int:course_id>\
-            /chapters/chapter<int:chapter_id>\
-            /exercises/new", 
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/new", 
             methods=["GET", "POST"])
 def new_exercise(course_id, chapter_id):
     if "user_id" not in session:
@@ -342,9 +337,7 @@ def new_exercise(course_id, chapter_id):
                         "error.html", 
                         message="Jokin meni pieleen luodessa tehtävää. :(")
 
-@app.route("/courses/course<int:course_id>\
-            /chapters/chapter<int:chapter_id>\
-            /exercises/exercise<int:exercise_id>", 
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/exercise<int:exercise_id>", 
             methods=["GET","POST"])
 def exercise(course_id, chapter_id, exercise_id):
     if "user_id" not in session:
@@ -394,7 +387,7 @@ def exercise(course_id, chapter_id, exercise_id):
                     choices=choices, 
                     answer=request.form["choice"], 
                     enrolled=enrolled)
-        if course_contents.add_answer(exercise_id, choice_id):
+        if course_contents.add_answer(exercise_id, request.form["choice"]):
             return redirect("/courses/course"+str(course_id)+
                             "/chapters/chapter"+str(chapter_id)+
                             "/exercises/exercise"+str(exercise_id))
@@ -403,9 +396,7 @@ def exercise(course_id, chapter_id, exercise_id):
                     "error.html", 
                     message="Jokin meni pieleen vastatessa tehtävään. :(")
 
-@app.route("/courses/course<int:course_id>\
-            /chapters/chapter<int:chapter_id>\
-            /exercises/exercise<int:exercise_id>/modify", 
+@app.route("/courses/course<int:course_id>/chapters/chapter<int:chapter_id>/exercises/exercise<int:exercise_id>/modify", 
             methods=["GET","POST"])
 def modify_exercise(course_id, chapter_id, exercise_id):
     if session["role"] not in ["teacher", "admin"]:
