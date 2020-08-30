@@ -78,7 +78,7 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 
 ## <a name="arkkitehtuuri"></a>Arkkitehtuuri
 
-Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjkäyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
+Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla käsitellään sivupyynnöt ja renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjän käyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
 
 Sovelluksen käsittelemät sivupyynnöt toteutetaan moduulissa routes.py eikä sen funktiolilla ole suoraa yhteyttä tietokantaan, vaan se kutsuu moduuleita users.py, courses.py tai course_contents.py riippuen siitä, mitä tietoa käsitellään. Käyttäjätietojen käsittelyyn liittyvät pyynnöt käsitellään users.py kautta, kurssien  tietojen lukemisen ja tallennuksen hoitaa courses.py ja kurssien sisältöjen (lukujen ja tehtävien) lukemisesta ja tallentamisesta vastaa course_contents.py.
 
@@ -181,13 +181,13 @@ VALUES ('student'), ('teacher'), ('admin');
 
 Sovelluksen toteutus on kuvattu alla käyttäjäroolit huomioiden.
 
-Ennen kirjautumista kaikki käyttäjät voivat:
+Ennen kirjautumista *kaikki* käyttäjät voivat:
 
 - Tarkastella etusivua
 - Kirjautua sisään tunnuksella ja salasanalla
 - Luoda uuden *opiskelija*-tasoisen tunnuksen
 
-Kirjauduttuaan *kaikki *käyttäjät voivat:
+Kirjauduttuaan *kaikki* käyttäjät voivat:
 
 - Tarkastella etusivua
 - Hakea kursseja
@@ -195,7 +195,7 @@ Kirjauduttuaan *kaikki *käyttäjät voivat:
 - Katsoa kurssien etusivua sisältäen kurssin opettajan, kurssien kuvauksen ja osallistujat
 - Ilmoittauduttaan kurssille:
   - Tarkastella kurssin lukuja
-  - Ratkaista kurssin lukujen tehtäviä ja nähdä oliko vastaus oikein vai väärin sekä mitkä vastauksista olisi olleet oikein
+  - Ratkaista kurssin lukujen tehtäviä ja nähdä oliko vastaus oikein vai väärin sekä mitkä vastauksista olisivat olleet oikein
       - Opettajien ja ylläpitäjien vastauksia ei tallenneta tietokantaan, vaan he voivat kokeilla vastauksia rajattomasti ja tarkastella, miltä sivu näyttää opiskelijan näkökulmasta. 
       - Opiskelijat voivat vastata vain kerran ja tieto tallentuu tietokantaan
 
@@ -211,6 +211,13 @@ Kirjauduttuaan vain *opettajat* ja *ylläpitäjät* voivat:
 Kirjauduttuaan vain *ylläpitäjät* voivat:
 - Muokata kurssien sisältöä (lukuja ja tehtäviä) ilmottautumatta
 - Tarkastella kaikkia käyttäjätunnuksia ja muokata näiden tietoja (etunimi, sukunimi, käyttäjärooli)
+
+Ei toteutettuja ominaisuuksia tai puutteita:
+- Sovellukseen lisättyjä tietoja ei voi tällä hetkellä poistaa kenenkään käyttäjän toimesta
+- Kursseilta ei voi poistua
+- Kurssin vastuuopettajaa ei voi muuttaa
+- Muutoksista ei kerätä lokia
+- Tehtävän vaihtoehtojen määrää ei voi luomisen jälkeen muuttaa
 
 ## <a name="kirjautuminen"></a>Kirjautuminen Herokuun
 
