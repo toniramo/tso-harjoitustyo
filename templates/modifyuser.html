@@ -9,6 +9,7 @@
 <img src="/static/logo.svg" alt="logo" height="40px"><br>
 
 <form action="/usermanagement/user{{ user[4] }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <input type="hidden" name="user_id" value="{{ user[4] }}">
     <table>
         <tr>

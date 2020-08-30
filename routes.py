@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request, session
+from flask import render_template, redirect, request, session, abort
 from app import app
 import users
 import courses
@@ -35,7 +35,6 @@ def register():
         password = request.form["password"]
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
-        # TODO check that fields are not empty
         if users.register(username, password, first_name, last_name):
             return redirect("/")
         else:
@@ -61,6 +60,8 @@ def modifyuser(id):
         user = users.get_user(id)
         return render_template("modifyuser.html", user=user, roles=roles)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if users.update_user(request.form):
             user = users.get_user(id)
             return render_template("modifyuser.html", user=user, roles=roles, message="Käyttäjätiedot päivitetty onnistuneesti!")
@@ -126,6 +127,8 @@ def course_search_result():
 def enroll_course(id):
     if "user_id" not in session:
         return redirect("/")
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
     if courses.enroll_course(id):
         return redirect("/courses/course"+str(id))
     else:
@@ -141,9 +144,10 @@ def new_course():
     if request.method == "GET":
         return render_template("/courses/new.html")
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         name = request.form["name"]
         description = request.form["description"]
-        # TODO check fields are not empty
         id = courses.new_course(name, description)
         if id != None:
             return redirect("/courses/course"+str(id))
@@ -160,9 +164,12 @@ def new_chapter(id):
     if session["role"] == "teacher" and not courses.user_enrolled(session["user_id"],id):
         return render_template("error.html", message="Sinulla ei ole oikeuksia muokata kurssin sisältöä ennen kuin olet ilmottautunut kurssille.")
     chapter_count = len(course_contents.get_course_chapters(id))
+    print("toimii")
     if request.method == "GET":
         return render_template("/courses/chapters/new.html", course_id=id, chapter_count=chapter_count)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         ordinal = request.form["ordinal"]
         name = request.form["name"]
         content = request.form["content"]
@@ -201,6 +208,8 @@ def modify_chapter(course_id, chapter_id):
             return render_template("error.html", message="Lukua ei löydy kyseessä olevan kurssin alta.")
         return render_template("/courses/chapters/modify.html", course_id=course_id, chapter_id=chapter_id, chapter=chapter)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if course_contents.update_chapter(request.form):
             return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id))
         else:
@@ -220,6 +229,8 @@ def new_exercise(course_id, chapter_id):
     if request.method == "GET":
         return render_template("/courses/exercises/new_initial.html", course_id=course_id, chapter_id=chapter_id, choices=4, exercise_count=exercise_count)
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if request.form["button"] == "Päivitä vaihtoehtojen määrä":
             choices = int(request.form["choices"])
             return render_template("/courses/exercises/new_updated.html", course_id=course_id, chapter_id=chapter_id, choices=choices, exercise_count=exercise_count, form=request.form)
@@ -252,9 +263,10 @@ def exercise(course_id, chapter_id, exercise_id):
     if request.method == "GET":
         return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer, message=message, enrolled=enrolled)
     if request.method == "POST":
-        answer = request.form["choice"]
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         if session["role"] in ["teacher","admin"]:
-            return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=answer, enrolled=enrolled)
+            return render_template("/courses/exercises/exercise.html",course_id=course_id, chapter_id=chapter_id, exercise_id=exercise_id, chapter=chapter, exercise=exercise, choices=choices, answer=request.form["choice"], enrolled=enrolled)
         if course_contents.add_answer(exercise_id, choice_id):
             return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))
         else:
@@ -276,8 +288,9 @@ def modify_exercise(course_id, chapter_id, exercise_id):
         else:
             return render_template("error.html", message="Tehtävää ei löydy kurssin luvun alta.")
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         parameters = request.form
-        print(parameters)
         if course_contents.update_exercise_and_choices(parameters, choices):
             session["message"] = "Tehtävän päivitys onnistui!"
             return redirect("/courses/course"+str(course_id)+"/chapters/chapter"+str(chapter_id)+"/exercises/exercise"+str(exercise_id))

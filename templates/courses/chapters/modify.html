@@ -3,12 +3,14 @@
 {% block content %}
 <form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/modify" method="POST">
     <input type="hidden" name="chapter_id" value="{{ chapter_id }}">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <label>Luvun järjestysluku</label> <input type="number" name="ordinal" value="{{ chapter[0] }}" style="width: 4em" min="1"><br>
     <label>Luvun nimi </label> <input type="text" name="name" value="{{ chapter[1] }}" required="required"> <br>
     <p>
         <label>Sisältö</label><br><textarea name="content" rows="30" cols="80" method="POST">{{ chapter[2] }}</textarea> <br>
     </p>
     <input type="submit" value="Tallenna muutokset">
+
 </form>
 
 <p>

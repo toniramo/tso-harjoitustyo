@@ -2,6 +2,7 @@
 
 {% block content %}
 <form action="/courses/new" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     Kurssin nimi: <input type="text" name="name" required="required"> <br>
     Kurssin kuvaus: <textarea name="description" rows="4" cols="50"></textarea> <br>
     <input type="submit" value="Luo kurssi">

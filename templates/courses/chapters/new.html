@@ -4,6 +4,7 @@
 <form action="/courses/course{{ course_id }}/chapters/new" method="POST">
     <label>Luvun järjestysluku</label> <input type="number" name="ordinal" value="{{ chapter_count+1 }}" style="width: 4em" min="1"><br>
     <label>Luvun nimi </label> <input type="text" name="name" required="required"> <br>
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <p>
         <label>Sisältö</label><br><textarea name="content" rows="30" cols="80"></textarea> <br>
     </p>

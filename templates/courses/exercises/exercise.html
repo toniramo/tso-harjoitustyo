@@ -17,6 +17,7 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
 {% endfor %}
 
 <form action="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <table>
         {% for choice in choices %}
         <tr>
@@ -68,7 +69,7 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
     Mikäli haluat vastata uudelleen, <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}">lataa tehtäväsivu uudelleen.</a>
     </p>    
     {% endif %}
-    {% if session["role"] == "teacher" and enrolled %}
+    {% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
     Voit muokata tehtävää <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}/modify">tästä.</a>
     {% endif %}
 {% endif %}

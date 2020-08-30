@@ -61,6 +61,7 @@ Liity kurssille, mikäli haluat muokata sen sisältöä.
 </p>
 
 <form action="/courses/enroll/course{{ course[3] }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <input type="submit"
         {% if enrolled %}value="Olet liittynyt kurssille" disabled="disabled"
         {% else %}value="Liity kurssille"{% endif %}>

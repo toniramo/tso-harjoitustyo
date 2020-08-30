@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Luo tehtävä</h1>
 <form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/new" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <p>
         <label>Tehtävän järjestysluku</label>
         <input type="number" min="1" name="ordinal" value="{{ form["ordinal"] }}" style="width: 4em"> <br>
