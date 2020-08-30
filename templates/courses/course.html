@@ -26,13 +26,16 @@
         {% endif %}
     </li>
 {% endfor %}
+</ul>
 
 {% if session["role"] == "student" and not enrolled %}
-<img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
-Liity kurssille, mikäli haluat tarkkastella sen sisältöä. 
+<p>
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi vinkki:</small> <br>
+    Liity kurssille, mikäli haluat tarkkastella sen sisältöä. 
+</p>
 {% endif %}
 
-</ul>
 {% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
 <a href="/courses/course{{ course[3] }}/chapters/new">Luo uusi luku</a>
 {% endif %}
@@ -69,7 +72,7 @@ Liity kurssille, mikäli haluat muokata sen sisältöä.
         {% else %}value="Liity kurssille"{% endif %}>
 </form>
 
-{% if enrolled and session["role"] in ["teacher","admin"] %}
+{% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
     <h2>Tuloksien yhteenveto</h2>
     <table>
         <tr>
