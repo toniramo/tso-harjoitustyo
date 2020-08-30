@@ -4,7 +4,10 @@
 {% set chapter_path = "/chapters/chapter"+chapter_id|string %}
 {% set correct_choice = [] %}
 
+{% block title %}Tehtävä{% endblock %}
+
 {% block content %}
+
 {% if message %}
 {{ message }} <hr>
 {% endif %}
@@ -12,6 +15,7 @@
 Luku {{ chapter[0] }} - {{ chapter[1] }}
 
 <h1>Tehtävä {{ exercise[0] }} - {{ exercise[1] }}</h1>
+
 {% for line in exercise[2].rsplit('\n') %}
 <p>{{ line }}</p>
 {% endfor %}
@@ -22,7 +26,12 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
         {% for choice in choices %}
         <tr>
             <td>
-                <input type="radio" name="choice" value="{{ choice[0] }}" required="required" {% if answer != None %} disabled {% endif %} {% if answer|int == choice[0] %} checked {% endif %}>
+                <input type="radio" 
+                       name="choice" 
+                       value="{{ choice[0] }}" 
+                       required="required" 
+                       {% if answer != None %} disabled {% endif %} 
+                       {% if answer|int == choice[0] %} checked {% endif %}>
             </td>
             <td>
                 <label>{{ choice[1] }}</label>
@@ -40,18 +49,22 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
         </tr>
         {% endfor %}
     </table>
-    <input type="submit" {% if answer != None %} value="Vastaus lukittu" disabled {% else %} value="Lukitse vastaus" {% endif %}>
+    <input type="submit" 
+           {% if answer != None %} value="Vastaus lukittu" disabled 
+           {% else %} value="Lukitse vastaus" {% endif %}>
 </form>
 
 <p>
     {% if answer != None %}
-        {% if answer|int in correct_choice %}
-        <img src="/static/logo.svg" alt="logo" height="40px"> Vastauksesi on OIKEIN, hienoa!
-        {% else %}
-        Vastauksesi on valitettavasti väärin. <large>:(</large>
-        {% endif %}
+    {% if answer|int in correct_choice %}
+    <img src="/static/logo.svg" alt="logo" height="40px"> 
+    Vastauksesi on OIKEIN, hienoa!
     {% else %}
-    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi huomio:</small> <br>
+    Vastauksesi on valitettavasti väärin. <large>:(</large>
+    {% endif %}
+    {% else %}
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi huomio:</small> <br>
     Toistaiseksi voit vastata tehtävään vain kerran. Olethan tarkkana!
     {% endif %}
 </p>
@@ -61,16 +74,27 @@ Luku {{ chapter[0] }} - {{ chapter[1] }}
 {% if session["role"] in ["teacher","admin"] %}
 <hr>
 <p>
-    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi lisähuomio opettajille ja ylläpitäjille:</small> <br>
-    Opettajana tai ylläpitäjänä voit katsella, miltä tehtävä oppilaiden näkökulmasta näyttää. Vastaustasi ei tallenneta, mutta näet sen samalla tavalla kuin miltä se olisi oppilaasta näyttänyt.
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi lisähuomio opettajille ja ylläpitäjille:</small> <br>
+    Opettajana tai ylläpitäjänä voit katsella, 
+    miltä tehtävä oppilaiden näkökulmasta näyttää. 
+    Vastaustasi ei tallenneta, mutta näet sen samalla tavalla 
+    kuin miltä se olisi oppilaasta näyttänyt.
 </p>
     {% if answer %}
     <p>
-    Mikäli haluat vastata uudelleen, <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}">lataa tehtäväsivu uudelleen.</a>
+    Mikäli haluat vastata uudelleen, 
+    <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}">
+        lataa tehtäväsivu uudelleen.
+    </a>
     </p>    
     {% endif %}
-    {% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
-    Voit muokata tehtävää <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}/modify">tästä.</a>
+    {% if (session["role"] == "teacher" and enrolled) 
+        or session["role"] == "admin" %}
+    Voit muokata tehtävää 
+    <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise_id }}/modify">
+        tästä.
+    </a>
     {% endif %}
 {% endif %}
 

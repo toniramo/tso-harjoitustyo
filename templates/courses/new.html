@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 
+{% block title %}Luo kurssi{% endblock %}
+
 {% block content %}
 <form action="/courses/new" method="POST">
     <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
@@ -9,7 +11,8 @@
 </form>
 
 <p>
-    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi huomio:</small> <br>
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi huomio:</small> <br>
     Kurssin vastuuopettajaksi merkitään automaattisesti kurssin luonut henkilö. 
     Tätä ei ole tällä hetkellä mahdollista muokata.
 </p>

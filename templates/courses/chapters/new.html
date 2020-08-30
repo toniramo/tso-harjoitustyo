@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
 
+{% block title %}Luo uusi luku{% endblock %}
+
 {% block content %}
 <form action="/courses/course{{ course_id }}/chapters/new" method="POST">
-    <label>Luvun järjestysluku</label> <input type="number" name="ordinal" value="{{ chapter_count+1 }}" style="width: 4em" min="1"><br>
-    <label>Luvun nimi </label> <input type="text" name="name" required="required"> <br>
+    <label>Luvun järjestysluku</label> 
+    <input type="number" name="ordinal" value="{{ chapter_count+1 }}" style="width: 4em" min="1"><br>
+    <label>Luvun nimi </label> 
+    <input type="text" name="name" required="required"> <br>
     <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <p>
         <label>Sisältö</label><br><textarea name="content" rows="30" cols="80"></textarea> <br>
@@ -14,11 +18,16 @@
 <p>
     <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi huomio:</small> <br>
     Luvun järjestysluku määrittää sen, missä järjestyksessä luku listataan. 
-    Huomaa, että voit antaa saman järjestysluvun useammalle luvulle, joilloin järjestys määräytyy luvun nimen mukaan. 
+    Huomaa, että voit antaa saman järjestysluvun useammalle luvulle, 
+    joilloin järjestys määräytyy luvun nimen mukaan. 
     Suositeltavaa on käyttää uniikkia järjestyslukua.
 </p>
 
 <p>
-    Voit palata takaisin<a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}"> luvun sivulle</a> tallentamatta muutoksia.
+    Voit palata takaisin 
+    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">
+        luvun sivulle
+    </a>
+     tallentamatta muutoksia.
 </p>
 {% endblock %}

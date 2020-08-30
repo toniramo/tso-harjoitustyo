@@ -1,12 +1,17 @@
 {% extends "layout.html" %}
+
+{% block title %}Käyttäjätietojen muokkaus{% endblock %}
+
 {% block content %}
 {{ message }}
+
 {% if session["user_id"] == user[4] %}
 <h1>Omien käyttäjätietojen muokkaus</h1>
 {% else %}
 <h1>Käyttäjätietojen muokkaus</h1>
 {% endif %}
-<img src="/static/logo.svg" alt="logo" height="40px"><br>
+
+<img src="/static/logo.svg" alt="logo" height="50px"><br>
 
 <form action="/usermanagement/user{{ user[4] }}" method="POST">
     <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
@@ -29,11 +34,13 @@
             <td>
                 <select name="role_id">
                     {% for role in roles %}
-                    <option value={{ role[0] }} {% if user[3] == role[1] %} selected="selected" {% endif %}>
-                        {% if role[1] == "student" %}opiskelija
-                        {% elif role[1] == "teacher" %}opettaja
-                        {% elif role[1] == "admin" %}ylläpitäjä
-                        {% endif %}
+                    <option value={{ role[0] }} 
+                            {% if user[3] == role[1] %} selected="selected" 
+                            {% endif %}>
+                    {% if role[1] == "student" %}opiskelija
+                    {% elif role[1] == "teacher" %}opettaja
+                    {% elif role[1] == "admin" %}ylläpitäjä
+                    {% endif %}
                     </option>
                     {% endfor %}
                 </select>
@@ -44,7 +51,10 @@
 </form>
 
 <p>
-    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
-    Mikäli muokkaat omia tietojasi, kannattaa kirjautua uudelleen sisään istunnon tietojen päivittymiseksi.
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi vinkki:</small> <br>
+    Mikäli muokkaat omia tietojasi, 
+    kannattaa kirjautua uudelleen sisään 
+    istunnon tietojen päivittymiseksi.
 </p>
 {% endblock %}

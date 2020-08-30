@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-
+{% block title %}Luo tehtävä{% endblock %}
 {% block content %}
 <h1>Luo tehtävä</h1>
 <form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/new" method="POST">
@@ -12,7 +12,7 @@
         <label>Kysymys</label> <br>
         <textarea name="question" rows="10" cols="80" required="required">{{ form["question"] }}</textarea>
     </p>
-    <label>Vastausvaihtoehjoten määrä</label> 
+    <label>Vastausvaihtoehtojen määrä</label> 
     <input type="number" min="1" max="20" value="{{ choices }}" name="choices">
     <input type="submit" value="Päivitä vaihtoehtojen määrä" name="button" id="secondary_button"><br>
     <small>Huomaa, että vaihtoehtojen määrää ei voi tällä hetkellä muuttaa jälkikäteen.</small><br>
@@ -27,8 +27,11 @@
         {% set correctkey = "correct" + choice|string %}
         <tr>
             <td>{{ choice }}</td>
-            <td><input type="text" name="choice{{ choice }}" value="{{ form[choicekey] }}" {% if choice == 1 %} placeholder="Täytä ainakin tämä." required="required" {% endif %}></td>
-            <td><input type="checkbox" name="correct{{ choice }}" {% if correctkey in form %}checked{% endif %}></td>
+            <td><input type="text" name="choice{{ choice }}" 
+                       value="{{ form[choicekey] }}" 
+                       {% if choice == 1 %} placeholder="Täytä ainakin tämä." required="required" {% endif %}></td>
+            <td><input type="checkbox" name="correct{{ choice }}" 
+                       {% if correctkey in form %}checked{% endif %}></td>
         </tr>
         {% endfor %}
     </table>
@@ -40,6 +43,8 @@
 </form>
 
 <p>
-    Voit palata <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">takaisin luvun sivulle</a>, jolloin tehtävä jää luomatta.
+    Voit palata <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">
+        takaisin luvun sivulle
+    </a>, jolloin tehtävä jää luomatta.
 </p>
 {% endblock %}

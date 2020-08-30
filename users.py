@@ -5,7 +5,8 @@ from db import db
 
 def login(username,password):
     sql = "SELECT users.password, users.id, roles.name \
-           FROM users LEFT JOIN roles ON roles.id = users.role_id \
+           FROM users \
+           LEFT JOIN roles ON roles.id = users.role_id \
            WHERE username=:username"
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()
@@ -34,7 +35,10 @@ def register(username,password,first_name,last_name):
                VALUES (:username,:password,:first_name,:last_name, \
                       (SELECT id FROM roles WHERE name = 'student'))"
         db.session.execute(sql, 
-            {"username":username,"password":hash_value,"first_name":first_name,"last_name":last_name})
+            {"username":username,
+             "password":hash_value,
+             "first_name":first_name,
+             "last_name":last_name})
         db.session.commit()
     except:
         return False
@@ -61,7 +65,9 @@ def get_roles():
 
 def update_user(parameters):
     try:
-        sql = "UPDATE users SET first_name=:first_name, last_name=:last_name, role_id=:role_id WHERE id=:user_id"
+        sql = "UPDATE users \
+               SET first_name=:first_name, last_name=:last_name, role_id=:role_id \
+               WHERE id=:user_id"
         db.session.execute(sql, parameters)
         db.session.commit()
         return True

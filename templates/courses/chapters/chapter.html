@@ -1,25 +1,35 @@
 {% extends "layout.html" %}
+
 {% set course_path = "/courses/course"+course_id|string %}
 {% set chapter_path = "/chapters/chapter"+chapter_id|string %}
+
+{% block title %}Kurssin luku{% endblock %}
+
 {% block content %}
+
 <h1>Luku {{ chapter[0] }} - {{ chapter[1] }}</h1>
 <h2>Sisältö</h2>
+
 {% for line in chapter[2].rsplit('\n') %}
 <p>{{ line }}</p>
 {% endfor %}
 
-{% if exercises %}
-<h2>Tehtävät</h2>
-{% endif %}
+{% if exercises %}<h2>Tehtävät</h2>{% endif %}
+
 <ul>
     {% for exercise in exercises %}
-    <li>{{ exercise[1] }}) <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise[0] }}">{{ exercise[2] }}</a></li>
+    <li>{{ exercise[1] }}) 
+        <a href="{{ course_path }}{{ chapter_path }}/exercises/exercise{{ exercise[0] }}">
+            {{ exercise[2] }}
+        </a>
+    </li>
     {% endfor %}
 </ul>
+
 {% if (session["role"] == "teacher" and enrolled) or session["role"] == "admin" %}
 <a href="{{ course_path }}{{ chapter_path }}/exercises/new">Luo uusi tehtävä</a> |
 <a href="{{ course_path }}{{ chapter_path }}/modify">Muokkaa lukua</a> | 
 {% endif %}
-<a href="{{ course_path }}">Takaisin kurssisivulle</a>
 
+<a href="{{ course_path }}">Takaisin kurssisivulle</a>
 {% endblock %}

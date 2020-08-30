@@ -1,14 +1,21 @@
 {% extends "layout.html" %}
 
+{% block title %}Käyttäjähallinta{% endblock %}
+
 {% block content %}
 <p>
-    <input type="text" id="usersearch" onkeyup="filterUsers()" placeholder="Hae käyttäjää hakusanalla"><br>
+    <input type="text" id="usersearch" onkeyup="filterUsers()" 
+           placeholder="Hae käyttäjää hakusanalla"><br>
     <form id="searchby">
         Hae käyttäjää 
-    <input type="radio" name="searchby" value="0" onclick="filterUsers()" checked>käyttäjänimen
-    <input type="radio" name="searchby" value="1" onclick="filterUsers()">etunimen
-    <input type="radio" name="searchby" value="2" onclick="filterUsers()">sukunimen
-    <input type="radio" name="searchby" value="3" onclick="filterUsers()">roolin perusteella.
+        <input type="radio" name="searchby" value="0" onclick="filterUsers()" checked>
+        käyttäjänimen
+        <input type="radio" name="searchby" value="1" onclick="filterUsers()">
+        etunimen
+        <input type="radio" name="searchby" value="2" onclick="filterUsers()">
+        sukunimen
+        <input type="radio" name="searchby" value="3" onclick="filterUsers()">
+        roolin perusteella.
     </form>
 </p>
 
@@ -36,8 +43,10 @@
 </table>
 
 <p>
-    <img src="/static/logo.svg" alt="logo" height="20px"> <small>Pöllömpi vinkki:</small> <br>
-    Mikäli haluat muokata käyttäjän tietoja, klikkaa haluttua käyttäjänimeä.
+    <img src="/static/logo.svg" alt="logo" height="20px"> 
+    <small>Pöllömpi vinkki:</small> <br>
+    Mikäli haluat muokata käyttäjän tietoja, 
+    klikkaa haluttua käyttäjänimeä.
 </p>
 
 <script>

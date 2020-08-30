@@ -1,8 +1,11 @@
 {% extends "layout.html" %}
 
+{% block title %}Muokkaa tehtävää{% endblock %}
+
 {% block content %}
 <h1>Muokkaa tehtävää {{ exercise[1] }}</h1>
-<form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}/modify" method="POST">
+<form action="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}/modify" 
+      method="POST">
     <input type="hidden" name="csrf_token" value="{{ session["csrf_token"] }}">
     <p>
         <label>Tehtävän järjestysluku</label>
@@ -38,8 +41,12 @@
 
 <p>
     Voit palata takaisin
-    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">luvun sivulle</a> tai 
-    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}">tehtäväsivulle</a>
+    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}">
+        luvun sivulle
+    </a> tai 
+    <a href="/courses/course{{ course_id }}/chapters/chapter{{ chapter_id }}/exercises/exercise{{ exercise_id }}">
+        tehtäväsivulle
+    </a>
     tallentamatta muutoksia.
 </p>
 {% endblock %}
