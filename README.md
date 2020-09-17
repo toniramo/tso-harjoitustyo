@@ -78,9 +78,9 @@ Yhteenvetona alla taulu toiminnoista ja oikeuksista.
 
 ## <a name="arkkitehtuuri"></a>Arkkitehtuuri
 
-Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä Flask-moduulia hyödyntäen, jonka avulla käsitellään sivupyynnöt ja renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjän käyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
+Sovelluksen toiminnallisuus toteutetaan Python 3-kielellä [Flask-moduulia](https://flask.palletsprojects.com/en/1.1.x/) hyödyntäen, jonka avulla käsitellään sivupyynnöt ja renderöidään käyttöliittymänä toimivat HTML-sivut. Sivuilla käytetään myös JavaScriptiä loppukäyttäjän käyttökokemusta parantavien toimintojen toteuttamiseksi. Tarkemmat tiedot sovelluksen riippuvuuksista löytyy tiedostosta [requirements.txt](requirements.txt)
 
-Sovelluksen käsittelemät sivupyynnöt toteutetaan moduulissa routes.py eikä sen funktiolilla ole suoraa yhteyttä tietokantaan, vaan se kutsuu moduuleita users.py, courses.py tai course_contents.py riippuen siitä, mitä tietoa käsitellään. Käyttäjätietojen käsittelyyn liittyvät pyynnöt käsitellään users.py kautta, kurssien  tietojen lukemisen ja tallennuksen hoitaa courses.py ja kurssien sisältöjen (lukujen ja tehtävien) lukemisesta ja tallentamisesta vastaa course_contents.py.
+Sovelluksen käsittelemät sivupyynnöt toteutetaan moduulissa [routes.py](./routes.py) eikä sen funktiolilla ole suoraa yhteyttä tietokantaan, vaan se kutsuu moduuleita [users.py](./users.py), [courses.py](./courses.py) tai [course_contents.py](./course_contents.py) riippuen siitä, mitä tietoa käsitellään. Käyttäjätietojen käsittelyyn liittyvät pyynnöt käsitellään users.py kautta, kurssien  tietojen lukemisen ja tallennuksen hoitaa courses.py ja kurssien sisältöjen (lukujen ja tehtävien) lukemisesta ja tallentamisesta vastaa course_contents.py.
 
 Sovelluksessa käytettävien tietojen pysyväistallennuseen käytetään PostgreSQL-tietokantaa.
 
@@ -206,7 +206,7 @@ Kirjauduttuaan vain *opettajat* ja *ylläpitäjät* voivat:
 - Ilmottauduttuaan kurssille tai luotuaan itse kurssin:
   - Tarkastella kurssin tehtävien vastausten yhteenvetoa kurssin etusivulla
   - Luoda uusia lukuja ja muokata vanhoja
-  - Luoda uusia tehtäviä lukujen alle tai luoda vanhoja
+  - Luoda uusia tehtäviä lukujen alle tai muuttaa vanhoja
 
 Kirjauduttuaan vain *ylläpitäjät* voivat:
 - Muokata kurssien sisältöä (lukuja ja tehtäviä) ilmottautumatta
@@ -218,6 +218,8 @@ Ei toteutettuja ominaisuuksia tai puutteita:
 - Kurssin vastuuopettajaa ei voi muuttaa
 - Muutoksista ei kerätä lokia
 - Tehtävän vaihtoehtojen määrää ei voi luomisen jälkeen muuttaa
+- Muut kuin ylläpitäjä-roolin omaavat käyttäjät eivät voi muuttaa tietojaan. Salasanaa ei voi vaihtaa kenenkään toimesta.
+
 
 ## <a name="kirjautuminen"></a>Kirjautuminen Herokuun
 
